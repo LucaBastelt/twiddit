@@ -1,0 +1,16 @@
+<h1>
+    <span class="twi">Twi</span><span class="ddit">ddit</span>
+</h1>
+<h2 *ngIf="this.oauthService.hasValidIdToken()">
+    <span>Hallo, {{name}}</span>
+</h2>
+
+<hr>
+
+<button pButton class="ui-button-raised" (click)="login()" *ngIf="!this.oauthService.hasValidIdToken()" style="margin-left: 20px;width: 60px;height: 25px;">
+    Login
+</button>
+
+<button pButton class="ui-button-raised" (click)="logoff()" *ngIf="this.oauthService.hasValidIdToken()" style="margin-left: 20px;width: 60px;height: 25px;">
+    Logout
+</button>

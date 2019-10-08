@@ -1,0 +1,13 @@
+.list-post{
+  cursor: pointer;
+  background-clip: border-box;
+  vertical-align: middle;
+}
+.list-post:hover {
+  background-color: lightgray;
+}
+.social-icon{
+  height: 20px;
+  position: relative;
+  top: 5px;
+}

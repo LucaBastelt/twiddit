@@ -1,0 +1,47 @@
+<ng-container *ngIf="scheduledPosts$ | async as scheduledPosts">
+  <p-dataView [value]="scheduledPosts">
+    <p-header>
+      <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+    </p-header>
+    <p-footer>
+      <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+    </p-footer>
+    <ng-template let-post pTemplate="listItem">
+      <div>
+        <app-scheduled-post-line
+          [post]="post"
+          class="ui-g"
+          style="padding: 1em;margin: 5px;border: 1px solid #d9d9d9"
+        ></app-scheduled-post-line>
+      </div>
+    </ng-template>
+    <ng-template let-post pTemplate="gridItem">
+      <div style="padding:.5em" class="">
+        <p-panel
+          [header]="this.schedulingService.formatDateHeader(post.postDateTime)"
+          [style]="{ 'text-align': 'center' }"
+        >
+          <span *ngIf="post.twitter.text != ''">
+            <img
+              src="../../../assets/img/Twitter_Social_Icon_Circle_Color.png"
+              class="social-icon"
+              alt="Twitter Logo"
+            />
+            &nbsp;
+            {{ post.twitter.text }}
+          </span>
+          <span *ngIf="post.twitter.text != '' && post.reddit.title != ''"><br /></span>
+          <span *ngIf="post.reddit.title != ''">
+            <img
+              src="../../../assets/img/reddit_share_circle_128.png"
+              class="social-icon"
+              alt="Reddit Logo"
+            />
+            &nbsp;
+            {{ post.reddit.title }}
+          </span>
+        </p-panel>
+      </div>
+    </ng-template>
+  </p-dataView>
+</ng-container>
