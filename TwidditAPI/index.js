@@ -4,6 +4,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
+const fs = require('fs');
 
 var api = require('./routes/routes');
 var app = express();
@@ -36,9 +37,22 @@ app.use('/api', checkJwt, api);
 var port = parseInt(process.env.PORT || '4300');
 app.set('port', port);
 
-var server = http.createServer(app);
-server.listen(port);
-server.on('listening', onListening);
+try{
+  var ssl = {
+    key: fs.readFileSync('/etc/letsencrypt/live/twiddit.tk/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/twiddit.tk/fullchain.pem'),
+    ca: fs.readFileSync('/etc/letsencrypt/live/twiddit.tk/chain.pem')
+  }
+  var server = https.createServer(ssl, app);
+
+  server.listen(port);
+  server.on('listening', onListening);
+
+} catch{
+  var server = http.createServer(app);
+  server.listen(port);
+  server.on('listening', onListening);
+}
 
 function onListening() {
   var addr = server.address();
