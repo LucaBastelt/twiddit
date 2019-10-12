@@ -24,7 +24,7 @@ import { ScheduledPostLineComponent } from './components/scheduled-post-line/sch
     BrowserModule,
     OAuthModule.forRoot({
           resourceServer: {
-          allowedUrls: ['http://dad928fc.ngrok.io/api'],
+          allowedUrls: ['https://twiddit.tk/api'],
           sendAccessToken: true
       }
     }),
