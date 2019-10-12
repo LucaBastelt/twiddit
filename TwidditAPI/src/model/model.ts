@@ -15,15 +15,16 @@ export class DatabaseConnection {
 
     public async createTablesIfNotExist(): Promise<void> {
         await this.pool.query('CREATE SCHEMA IF NOT EXISTS twiddit;')
-            .then(() =>
-                this.pool.query('CREATE TABLE IF NOT EXISTS twiddit.scheduledPosts'
-                    + ' (userMail text NOT NULL PRIMARY KEY, '
-                    + 'postDateTime text NOT NULL, '
-                    + 'imageUrl text, '
-                    + 'twitterText text, '
-                    + 'reddtTitle text, '
-                    + 'subreddit text, '
-                    + 'nsfw boolean);'));
+            .catch(console.log);
+        await this.pool.query('CREATE TABLE IF NOT EXISTS twiddit.scheduledposts'
+            + ' (userMail text NOT NULL PRIMARY KEY, '
+            + 'postDateTime text NOT NULL, '
+            + 'imageUrl text, '
+            + 'twitterText text, '
+            + 'redditTitle text, '
+            + 'subreddit text, '
+            + 'nsfw boolean);')
+            .catch(console.log);
     }
 
 }

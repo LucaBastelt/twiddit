@@ -1,15 +1,14 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { delay } from 'rxjs/operators';
-import { Moment } from 'moment';
+import { Injectable } from '@angular/core';
 import * as moment from 'moment';
+import { Observable, of } from 'rxjs';
+import { map, delay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SchedulingService {
-  apiPath = 'http://dad928fc.ngrok.io/api/schedule';
+  apiPath = 'localhost/api/scheduled-posts';
 
   scheduledPosts$: Observable<ScheduledPost[]>;
 
@@ -22,20 +21,32 @@ export class SchedulingService {
     } as ScheduledPost,
     {
       reddit: { title: 'posty mcpostboi 2', subreddit: '/r/stuff' },
-      twitter: {text: ''},
+      twitter: { text: '' },
       imageUrl: 'http://imgur.com/sdgf',
       postDateTime: '2019-10-11T19:30'
     } as ScheduledPost,
     {
-      reddit: {title: '', subreddit: '', nsfw: false},
+      reddit: { title: '', subreddit: '', nsfw: false },
       twitter: { text: 'posty mcpostboi 3' },
       postDateTime: '2019-10-11T01:30'
     } as ScheduledPost
   ];
 
   constructor(private httpClient: HttpClient) {
-    // this.scheduledPosts$ = this.httpClient.get<ScheduledPost[]>(this.apiPath).pipe();
-    this.scheduledPosts$ = of(this.dummyData).pipe(delay(1));
+    this.scheduledPosts$ = this.httpClient.get<any>(this.apiPath)
+      .pipe(map((posts) => {
+        const out = [];
+        posts.forEach(post => {
+          out.push({
+            reddit: { title: post.reddittitle, subreddit: post.subreddit },
+            twitter: { text: post.twittertext },
+            imageUrl: post.imageurl,
+            postDateTime: post.postdatetime
+          } as ScheduledPost);
+        });
+        return out;
+      }));
+    // this.scheduledPosts$ = of(this.dummyData).pipe(delay(1));
   }
 
   deletePost(post: ScheduledPost) {
@@ -46,3 +57,4 @@ export class SchedulingService {
     return moment(dateTime).format('M.D.YY HH:mm');
   }
 }
+

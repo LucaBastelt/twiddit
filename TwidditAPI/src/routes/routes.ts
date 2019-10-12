@@ -24,7 +24,7 @@ export function route(): Router {
 
   const router = express.Router();
   getConnection();
-  router.use(checkJwt);
+  router.use('/', checkJwt);
   router.use((err: Error, req: Request, res: Response, next: () => any) => {
     if (err.name === 'UnauthorizedError') {
       res.status(401).send(err);
@@ -35,7 +35,7 @@ export function route(): Router {
     const db = await getConnection();
     const userMail = req.user.email;
     db.pool
-      .query('SELECT * FROM scheduledPosts WHERE userMail = $1', [userMail])
+      .query('SELECT * FROM scheduledposts WHERE userMail = $1', [userMail])
       .then((result) => res.send(result.rows[0]))
       .catch((e) =>
         setImmediate(() => {
