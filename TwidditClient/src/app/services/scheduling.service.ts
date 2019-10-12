@@ -36,14 +36,14 @@ export class SchedulingService {
     this.scheduledPosts$ = this.httpClient.get<any>(this.apiPath)
       .pipe(map((posts) => {
         const out = [];
-        posts.forEach(post => {
+        for (const post of posts) {
           out.push({
             reddit: { title: post.reddittitle, subreddit: post.subreddit },
             twitter: { text: post.twittertext },
             imageUrl: post.imageurl,
             postDateTime: post.postdatetime
           } as ScheduledPost);
-        });
+        }
         return out;
       }));
     // this.scheduledPosts$ = of(this.dummyData).pipe(delay(1));

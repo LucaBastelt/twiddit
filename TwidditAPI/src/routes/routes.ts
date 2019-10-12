@@ -17,7 +17,7 @@ const checkJwt = jwt({
   // Validate the audience and the issuer.
   algorithms: ['RS256'],
   audience: process.env.GOOGLE_OIDC_API_CODE,
-  issuer: 'accounts.google.com',
+  issuer: 'https://accounts.google.com',
 });
 
 export function route(): Router {
