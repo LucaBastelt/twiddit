@@ -25,7 +25,7 @@
     <form (submit)="this.onSavePost()" class="ui-g-12">
 
       <div class="ui-g-5">
-        <ngb-datepicker #dp [(ngModel)]="postDate" (navigate)="date = $event.next" name="date"></ngb-datepicker>
+        <ngb-datepicker #dp [(ngModel)]="postDate" name="date"></ngb-datepicker>
         <ngb-timepicker [(ngModel)]="postTime" name="time"></ngb-timepicker>
       </div>
       <div class="ui-float-label ui-g-7" style="height: 50px;margin-top: 20px;">
