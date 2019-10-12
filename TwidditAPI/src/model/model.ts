@@ -1,22 +1,38 @@
 import { Pool } from 'pg';
 
-class DatabaseConnection {
-    
-    pool = new Pool();
+let connection: DatabaseConnection;
 
-    initializeDb() {
+export class DatabaseConnection {
+
+    public pool = new Pool();
+
+    constructor() {
         this.pool.on('error', (err, client) => {
             console.error('Unexpected error on idle client', err);
             process.exit(-1);
         });
-
-        return this.pool
-            .query('SELECT * FROM users WHERE id = $1', [1])
-            .then(res => console.log('user:', res.rows[0]))
-            .catch(e =>
-                setImmediate(() => {
-                    throw e
-                })
-            )
     }
+
+    public async createTablesIfNotExist(): Promise<void> {
+        await this.pool.query('CREATE SCHEMA IF NOT EXISTS twiddit;')
+            .then(() =>
+                this.pool.query('CREATE TABLE IF NOT EXISTS twiddit.scheduledPosts'
+                    + ' (userMail text NOT NULL PRIMARY KEY, '
+                    + 'postDateTime text NOT NULL, '
+                    + 'imageUrl text, '
+                    + 'twitterText text, '
+                    + 'reddtTitle text, '
+                    + 'subreddit text, '
+                    + 'nsfw boolean);'));
+    }
+
+}
+
+export async function getConnection() {
+    if (connection == null) {
+        connection = new DatabaseConnection();
+
+        await connection.createTablesIfNotExist();
+    }
+    return connection;
 }
