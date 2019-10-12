@@ -27,7 +27,7 @@ export function route(): Router {
   router.use('/', checkJwt);
   router.use((err: Error, req: Request, res: Response, next: () => any) => {
     if (err.name === 'UnauthorizedError') {
-      res.status(401).send([err, req.header]);
+      res.status(401).send([err, req.header, req.headers]);
     }
   });
 
@@ -40,7 +40,7 @@ export function route(): Router {
       .catch((e) =>
         setImmediate(() => {
           throw e;
-        })
+        }),
       );
   });
 
