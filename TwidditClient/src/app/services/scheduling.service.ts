@@ -8,7 +8,7 @@ import { map, delay } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class SchedulingService {
-  apiPath = '/api/scheduled-posts';
+  apiPath = 'https://twiddit.tk/api/scheduled-posts';
 
   scheduledPosts$: Observable<ScheduledPost[]>;
 
