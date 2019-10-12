@@ -14,26 +14,33 @@ export class SchedulingService {
 
   dummyData = [
     {
-      reddit: { title: 'posty mcpostboi', subreddit: '/r/stuff' },
-      twitter: { text: 'Posti to twitter boi' },
-      imageUrl: 'http://imgur.com/sdgf',
-      postDateTime: '2019-10-10T09:30'
-    } as ScheduledPost,
+      reddittitle: 'posty mcpostboi',
+      subreddit: '/r/stuff',
+      nsfw: 'false',
+      twittertext: 'Posti to twitter boi',
+      imageurl: 'http://imgur.com/sdgf',
+      postdatetime: '2019-10-10T09:30'
+    },
     {
-      reddit: { title: 'posty mcpostboi 2', subreddit: '/r/stuff' },
-      twitter: { text: '' },
-      imageUrl: 'http://imgur.com/sdgf',
-      postDateTime: '2019-10-11T19:30'
-    } as ScheduledPost,
+      reddittitle: 'posty mcpostboi 2',
+      subreddit: '/r/stuff',
+      twittertext: '',
+      nsfw: 'false',
+      imageurl: 'http://imgur.com/2345',
+      postdatetime: '2019-10-11T19:30'
+    },
     {
-      reddit: { title: '', subreddit: '', nsfw: false },
-      twitter: { text: 'posty mcpostboi 3' },
-      postDateTime: '2019-10-11T01:30'
-    } as ScheduledPost
+      reddittitle: '',
+      subreddit: '',
+      nsfw: 'false',
+      twittertext: 'posty mcpostboi 3',
+      imageurl: 'http://imgur.com/sda4bv345qgf',
+      postdatetime: '2019-10-11T01:30'
+    }
   ];
 
   constructor(private httpClient: HttpClient) {
-    this.scheduledPosts$ = this.httpClient.get<any>(this.apiPath)
+    this.scheduledPosts$ = this.httpClient.get<any[]>(this.apiPath)
       .pipe(map((posts) => {
         const out = [];
         for (const post of posts) {
@@ -46,7 +53,21 @@ export class SchedulingService {
         }
         return out;
       }));
-    // this.scheduledPosts$ = of(this.dummyData).pipe(delay(1));
+    /*this.scheduledPosts$ = of(this.dummyData)
+      .pipe(
+        delay(1),
+        map((posts) => {
+          const out = [];
+          for (const post of posts) {
+            out.push({
+              reddit: { title: post.reddittitle, subreddit: post.subreddit },
+              twitter: { text: post.twittertext },
+              imageUrl: post.imageurl,
+              postDateTime: post.postdatetime
+            } as ScheduledPost);
+          }
+          return out;
+        }));*/
   }
 
   deletePost(post: ScheduledPost) {

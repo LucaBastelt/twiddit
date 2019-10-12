@@ -36,7 +36,7 @@ export function route(): Router {
     const userMail = req.user.email;
     db.pool
       .query('SELECT * FROM scheduledposts WHERE userMail = $1', [userMail])
-      .then((result) => res.send(result.rows[0]))
+      .then((result) => res.send(result.rows))
       .catch((e) =>
         setImmediate(() => {
           throw e;
