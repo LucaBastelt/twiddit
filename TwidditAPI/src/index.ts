@@ -15,10 +15,10 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(express.static(path.join(__dirname, '../TwidditClient/dist/Twiddit')));
+app.use(express.static(path.join(__dirname, '../../TwidditClient/dist/Twiddit')));
 app.use(
   '/',
-  express.static(path.join(__dirname, '../TwidditClient/dist/Twiddit')),
+  express.static(path.join(__dirname, '../../TwidditClient/dist/Twiddit')),
 );
 app.use('/api', apiRoute());
 
