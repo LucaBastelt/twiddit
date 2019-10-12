@@ -8,7 +8,7 @@ import { map, delay } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class SchedulingService {
-  apiPath = 'localhost/api/scheduled-posts';
+  apiPath = '/api/scheduled-posts';
 
   scheduledPosts$: Observable<ScheduledPost[]>;
 
