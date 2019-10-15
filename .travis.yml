@@ -1,0 +1,8 @@
+os: linux
+language: node_js
+
+script:
+  - cd TwidditClient
+  - ng build
+  - cd ../TwidditAPI
+  - npm run build
