@@ -9,7 +9,7 @@ export const authConfig: AuthConfig = {
   redirectUri: window.location.origin,
 
   // The SPA's id. The SPA is registered with this id at the auth-server
-  clientId: '341498580870-6ft6jad0dj6g1rtni435dg9kvn1r5phb.apps.googleusercontent.com',
+  clientId: '341498580870-fkjingva5odhcj8lbgsr9jr7ehjplar4.apps.googleusercontent.com',
 
   // set the scope for the permissions the client should request
   // The first three are defined by OIDC. The 4th is a usecase-specific one
