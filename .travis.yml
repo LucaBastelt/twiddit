@@ -3,6 +3,8 @@ language: node_js
 
 script:
   - cd TwidditClient
+  - npm install
   - ng build
   - cd ../TwidditAPI
+  - npm install
   - npm run build
