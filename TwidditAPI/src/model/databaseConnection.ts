@@ -17,7 +17,8 @@ export class DatabaseConnection {
         await this.pool.query('CREATE SCHEMA IF NOT EXISTS twiddit;')
             .catch(console.log);
         await this.pool.query('CREATE TABLE IF NOT EXISTS twiddit.scheduledposts'
-            + ' (userMail text NOT NULL PRIMARY KEY, '
+            + ' (id SERIAL, '
+            + 'userMail text NOT NULL PRIMARY KEY, '
             + 'postDateTime text NOT NULL, '
             + 'imageUrl text, '
             + 'twitterText text, '

@@ -1,7 +1,11 @@
 import express, { Request, Response, Router } from 'express';
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
-import { getConnection } from '../model/model';
+const jwtDecode = require('jwt-decode');
+
+import { getConnection } from '../model/databaseConnection';
+
+import { morphToScheduledPosts } from '../model/toModelTransformation';
 
 const checkJwt = jwt({
   // Dynamically provide a signing key
@@ -24,10 +28,24 @@ export function route(): Router {
 
   const router = express.Router();
   getConnection();
-  router.use('/', checkJwt);
+
+  if (process.env.NODE_ENV === 'production') {
+    router.use('/', checkJwt);
+  } else {
+    router.use('/', (req, res, next) => {
+      if (req.headers.authorization) {
+        req.user = jwtDecode(req.headers.authorization);
+        next();
+      }
+      else {
+        res.status(401).send(['Unauthorized, no auth header', req.headers]);
+      }
+    });
+  }
+
   router.use((err: Error, req: Request, res: Response, next: () => any) => {
     if (err.name === 'UnauthorizedError') {
-      res.status(401).send([err, req.header, req.headers]);
+      res.status(401).send([err, req.headers]);
     }
   });
 
@@ -36,7 +54,7 @@ export function route(): Router {
     const userMail = req.user.email;
     db.pool
       .query('SELECT * FROM scheduledposts WHERE userMail = $1', [userMail])
-      .then((result) => res.send(result.rows))
+      .then((result) => res.send(morphToScheduledPosts(result.rows)))
       .catch((e) =>
         setImmediate(() => {
           throw e;

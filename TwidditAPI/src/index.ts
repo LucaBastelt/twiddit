@@ -1,5 +1,5 @@
 import bodyParser from 'body-parser';
-import {config as configureEnvironment} from 'dotenv';
+import {config as configureDotenvEnvironment} from 'dotenv';
 import express from 'express';
 import fs from 'fs';
 import http from 'http';
@@ -7,10 +7,17 @@ import https from 'https';
 import path from 'path';
 import { route as apiRoute } from './routes/routes';
 
+// tslint:disable: no-var-requires
+const helmet = require('helmet');
+const compression = require('compression');
+
 console.log('starting twiddit server');
-configureEnvironment();
+
+configureDotenvEnvironment();
 
 const app = express();
+app.use(helmet());
+app.use(compression());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

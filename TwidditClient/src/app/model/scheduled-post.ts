@@ -1,5 +1,6 @@
 
 interface ScheduledPost {
+    id: number;
     postDateTime: string;
     imageUrl: string;
     twitter: {
