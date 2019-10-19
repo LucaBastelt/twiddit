@@ -12,8 +12,9 @@ export class ScheduledPostsComponent implements OnInit {
   scheduledPosts$: Observable<ScheduledPost[]>;
 
   constructor(public schedulingService: SchedulingService) {
-    this.scheduledPosts$ = schedulingService.scheduledPosts$;
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.scheduledPosts$ = this.schedulingService.reloadPosts();
+  }
 }

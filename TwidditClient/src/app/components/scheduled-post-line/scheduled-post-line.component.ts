@@ -22,12 +22,14 @@ export class ScheduledPostLineComponent implements OnInit {
   }
 
   delete(post: ScheduledPost) {
-    this.schedulingService.deletePost(post);
+    this.schedulingService.deletePost(post.id);
   }
 
   open(post: ScheduledPost) {
     this.displayEditDialog = true;
   }
 
-  onSavePost() {}
+  onSavePost() {
+    // TODO: Save post
+  }
 }
