@@ -23,9 +23,9 @@ export class AuthInterceptor implements HttpInterceptor {
 
     public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         const url = req.url.toLowerCase();
-        console.log('Intercepting HTTP Request to ' + url);
+        // console.log('Intercepting HTTP Request to ' + url);
         if (!this.checkUrl(url)) { return next.handle(req); }
-        console.log('Appending auth token');
+        // console.log('Appending auth token');
 
         const token = this.authStorage.getItem('id_token');
         if (token) {

@@ -1,14 +1,13 @@
 
-import {config as configureDotenvEnvironment} from 'dotenv';
-configureDotenvEnvironment();
-
 import bodyParser from 'body-parser';
 import express from 'express';
 import fs from 'fs';
 import http from 'http';
 import https from 'https';
 import path from 'path';
-import { route as apiRoute } from './routes/routes';
+import { ApiRouter } from './routes/routes';
+import {config as configureDotenvEnvironment} from 'dotenv';
+configureDotenvEnvironment();
 
 // tslint:disable: no-var-requires
 const helmet = require('helmet');
@@ -28,7 +27,8 @@ app.use(
   '/',
   express.static(path.join(__dirname, '../../TwidditClient/dist/Twiddit')),
 );
-app.use('/api', apiRoute());
+
+app.use('/api', ApiRouter);
 
 const port = parseInt(process.env.PORT || '4300', 10);
 app.set('port', port);

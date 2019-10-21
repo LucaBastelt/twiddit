@@ -1,6 +1,7 @@
 <ng-container *ngIf="scheduledPosts$ | async as scheduledPosts">
   <p-dataView [value]="scheduledPosts">
     <p-header>
+      <button class="refresh-button" pButton type="button" icon="pi pi-refresh" (click)="this.reloadPosts()"></button>
       <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
     </p-header>
     <p-footer>
