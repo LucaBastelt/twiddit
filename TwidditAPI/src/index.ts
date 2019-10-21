@@ -1,5 +1,8 @@
-import bodyParser from 'body-parser';
+
 import {config as configureDotenvEnvironment} from 'dotenv';
+configureDotenvEnvironment();
+
+import bodyParser from 'body-parser';
 import express from 'express';
 import fs from 'fs';
 import http from 'http';
@@ -12,8 +15,6 @@ const helmet = require('helmet');
 const compression = require('compression');
 
 console.log('starting twiddit server');
-
-configureDotenvEnvironment();
 
 const app = express();
 app.use(helmet());

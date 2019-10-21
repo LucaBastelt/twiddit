@@ -8,12 +8,14 @@
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node dist/index.js",
+    "debug": "@powershell -Command $env:DEBUG= '*'; npm start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "compression": "^1.7.4",
+    "debug": "^4.1.1",
     "dotenv": "^8.1.0",
     "express": "^4.17.1",
     "express-jwt": "^5.3.1",
