@@ -42,10 +42,6 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-router.use('/', (req, res, next) => {
-  console.log(JSON.stringify(req.user));
-});
-
 router.use((err: Error, req: Request, res: Response, next: () => any) => {
   console.error('Error: ' + err.message);
   console.error('' + err.stack);
