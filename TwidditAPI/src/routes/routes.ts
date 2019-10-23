@@ -1,4 +1,4 @@
-import express, { Request, Response, Router } from 'express';
+import express, { Request, Response } from 'express';
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
 const jwtDecode = require('jwt-decode');
@@ -88,7 +88,7 @@ router.put('/scheduled-posts/:postId', async (req, res, next) => {
   const post = morphToDatabaseScheduledPost(req.body.post);
   db.pool
     .query('UPDATE scheduledposts '
-      + 'SET postdatetime=$1, imageurl=$2, twittertext=$3, reddittitle=$4, subreddit=$5, nsft=$6  '
+      + 'SET postdatetime=$1, imageurl=$2, twittertext=$3, reddittitle=$4, subreddit=$5, nsfw=$6  '
       + 'WHERE userMail = $7 AND id = $8 RETURNING *;',
       [post.postdatetime, post.imageurl, post.twittertext, post.reddittitle, post.subreddit, post.nsfw, userMail, req.params.postId])
     .then((result) => res.status(201).send(morphToScheduledPosts(result.rows)))

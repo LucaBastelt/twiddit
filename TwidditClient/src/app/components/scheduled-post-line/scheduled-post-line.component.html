@@ -1,5 +1,5 @@
-<div class="ui-g-11 list-post">
-  <div class="ui-g-8" (click)="this.open(post)">
+<div class="ui-g-11 list-post" (click)="this.open()">
+  <div class="ui-g-8">
     <span *ngIf="post.twitter.text != ''">
       <img src="../../../assets/img/Twitter_Social_Icon_Circle_Color.png" class="social-icon" alt="Twitter Logo" />
       &nbsp;
@@ -12,11 +12,11 @@
       {{ post.reddit.title }}
     </span>
   </div>
-  <div class="ui-g-4 search-icon" style="margin: auto;text-align: center;">
+  <div class="ui-g-4" style="margin: auto;text-align: center;">
     {{ this.schedulingService.formatDateHeader(post.postDateTime) }}
   </div>
 </div>
-<div class="ui-g-1 search-icon" style="margin: auto;text-align: center;">
+<div class="ui-g-1" style="margin: auto;text-align: center;">
   <button pButton type="button" icon="pi pi-trash" (click)="this.delete(post)"></button>
 </div>
 
@@ -54,8 +54,9 @@
       </div>
       <div class="ui-g-1">
         <label for="nsfw">NSFW</label><br />
-        <p-checkbox name="nsfw" [(ngModel)]="post.reddit.nsfw"></p-checkbox>
+        <p-checkbox name="nsfw" [(ngModel)]="post.reddit.nsfw" binary="true"></p-checkbox>
       </div>
+      <button class="ui-g-12 save-button" pButton type="submit">Save</button>
     </form>
   </div>
 </p-dialog>

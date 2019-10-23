@@ -19,7 +19,6 @@
     "dotenv": "^8.1.0",
     "express": "^4.17.1",
     "express-jwt": "^5.3.1",
-    "helmet": "^3.21.1",
     "jwks-rsa": "^1.6.0",
     "jwt-decode": "^2.2.0",
     "morphism": "^1.12.1",

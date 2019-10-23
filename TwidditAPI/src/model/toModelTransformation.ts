@@ -15,10 +15,10 @@ export interface ScheduledPost {
     id: number;
     postDateTime: string;
     imageUrl: string;
-    twitter?: {
+    twitter: {
         text: string,
     };
-    reddit?: {
+    reddit: {
         title: string,
         subreddit: string,
         nsfw: boolean,
@@ -29,17 +29,13 @@ export const ScheduledPostSchema = {
     id: 'id',
     postDateTime: 'postdatetime',
     imageUrl: 'imageurl',
-    twitter: (it: DatabaseScheduledPost) => {
-        return it.twittertext !== '' ? {
-            text: it.twittertext,
-        } : undefined;
+    twitter: {
+        text: 'twittertext'
     },
-    reddit: (it: DatabaseScheduledPost) => {
-        return it.reddittitle !== '' ? {
-            title: it.reddittitle,
-            subreddit: it.subreddit,
-            nsfw: it.nsfw,
-        } : undefined;
+    reddit: {
+        title: 'reddittitle',
+        subreddit: 'subreddit',
+        nsfw: 'nsfw'
     },
 };
 

@@ -10,13 +10,11 @@ import {config as configureDotenvEnvironment} from 'dotenv';
 configureDotenvEnvironment();
 
 // tslint:disable: no-var-requires
-const helmet = require('helmet');
 const compression = require('compression');
 
 console.log('starting twiddit server');
 
 const app = express();
-app.use(helmet());
 app.use(compression());
 
 app.use(bodyParser.json());

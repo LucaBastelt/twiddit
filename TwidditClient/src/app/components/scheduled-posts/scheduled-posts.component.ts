@@ -11,14 +11,53 @@ import * as moment from 'moment';
 export class ScheduledPostsComponent implements OnInit {
   scheduledPosts$: Observable<ScheduledPost[]>;
 
+  newPost: ScheduledPost;
+
+  newPostDate: { day: number, month: number, year: number };
+  newPostTime: { hour: number, minute: number };
+
+  public displayEditDialog: boolean;
+
   constructor(public schedulingService: SchedulingService) {
   }
 
   ngOnInit() {
-    this.reloadPosts();
+    this.scheduledPosts$ = this.schedulingService.getPosts();
+    this.resetNewPost();
+  }
+
+  resetNewPost() {
+    this.newPost = {
+      twitter: { text: '' },
+      reddit: {
+        title: '', subreddit: '',
+        nsfw: false
+      },
+      imageUrl: '',
+      postDateTime: moment().toString()
+    } as ScheduledPost;
   }
 
   reloadPosts() {
-    this.scheduledPosts$ = this.schedulingService.reloadPosts();
+    this.schedulingService.reloadPosts();
+  }
+
+  openAddDialog() {
+    const postDateTime = moment().local();
+    this.newPostDate = { day: postDateTime.date(), month: postDateTime.month() + 1, year: postDateTime.year() };
+    this.newPostTime = { hour: postDateTime.hour(), minute: postDateTime.minute() };
+    this.displayEditDialog = true;
+  }
+
+  async onAddPost(): Promise<void> {
+    const postDateTime = moment({
+      ...this.newPostTime,
+      day: this.newPostDate.day,
+      month: this.newPostDate.month - 1
+    }).utc();
+    this.newPost.postDateTime = postDateTime.toISOString();
+    await this.schedulingService.addPost(this.newPost);
+    this.displayEditDialog = false;
+    this.resetNewPost();
   }
 }

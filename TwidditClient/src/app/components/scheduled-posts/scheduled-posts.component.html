@@ -1,7 +1,9 @@
+
 <ng-container *ngIf="scheduledPosts$ | async as scheduledPosts">
   <p-dataView [value]="scheduledPosts">
     <p-header>
-      <button class="refresh-button" pButton type="button" icon="pi pi-refresh" (click)="this.reloadPosts()"></button>
+      <button class="table-button" pButton type="button" icon="pi pi-plus" (click)="this.openAddDialog()"></button>
+      <button class="table-button" pButton type="button" icon="pi pi-refresh" (click)="this.reloadPosts()"></button>
       <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
     </p-header>
     <p-footer>
@@ -46,3 +48,44 @@
     </ng-template>
   </p-dataView>
 </ng-container>
+
+<p-dialog header="Edit Post" [(visible)]="displayEditDialog" [closable]="true" [dismissableMask]="true" [modal]="true"
+  [resizable]="true" [style]="{height: '300px', width: '650px'}" [baseZIndex]="000">
+  <div class="ui-g">
+
+    <form (submit)="this.onAddPost()" class="ui-g-12">
+
+      <div class="ui-g-5">
+        <ngb-datepicker #dp [(ngModel)]="newPostDate" name="date"></ngb-datepicker>
+        <ngb-timepicker [(ngModel)]="newPostTime" name="time"></ngb-timepicker>
+      </div>
+      <div class="ui-float-label ui-g-7" style="height: 50px;margin-top: 20px;">
+        <input pInputText type="text" class="form-control" id="imageUrl" [(ngModel)]="newPost.imageUrl" name="imageUrl"
+          backdropClass="" />
+        <label for="imageUrl">Image URL</label>
+      </div>
+
+      <div class="ui-float-label ui-g-7" style="height: 150px;margin-top: 20px;">
+        <textarea pInputTextarea class="form-control" id="twitterText" [(ngModel)]="newPost.twitter.text"
+          name="twitterText" rows="6"></textarea>
+        <label for="twitterText">Twitter Text</label>
+      </div>
+
+      <div class="ui-float-label ui-g-7" style="height: 50px;margin-top: 20px;">
+        <input pInputText type="text" class="form-control" id="redditTitle" [(ngModel)]="newPost.reddit.title"
+          name="redditTitle" />
+        <label for="redditTitle">Reddit Title</label>
+      </div>
+      <div class="ui-float-label ui-g-6" style="height: 50px;margin-top: 20px;">
+        <input pInputText type="text" class="form-control" id="subreddit" [(ngModel)]="newPost.reddit.subreddit"
+          name="subreddit" />
+        <label for="subreddit">Subreddit</label>
+      </div>
+      <div class="ui-g-1">
+        <label for="nsfw">NSFW</label><br />
+        <p-checkbox name="nsfw" [(ngModel)]="newPost.reddit.nsfw" binary="true"></p-checkbox>
+      </div>
+      <button class="ui-g-12 save-button" pButton type="submit">Save</button>
+    </form>
+  </div>
+</p-dialog>

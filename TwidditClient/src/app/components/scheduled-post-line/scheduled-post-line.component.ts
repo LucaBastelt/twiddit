@@ -11,12 +11,13 @@ export class ScheduledPostLineComponent implements OnInit {
 
   @Input() post: ScheduledPost;
 
-  postDate;
-  postTime;
+  postDate: { day: number, month: number, year: number };
+  postTime: { hour: number, minute: number };
 
   public displayEditDialog: boolean;
 
-  constructor(public schedulingService: SchedulingService) {}
+  constructor(public schedulingService: SchedulingService) {
+  }
 
   ngOnInit() {
   }
@@ -25,11 +26,21 @@ export class ScheduledPostLineComponent implements OnInit {
     this.schedulingService.deletePost(post.id);
   }
 
-  open(post: ScheduledPost) {
+  open() {
+    const postDateTime = moment.utc(this.post.postDateTime).local();
+    this.postDate = { day: postDateTime.date(), month: postDateTime.month() + 1, year: postDateTime.year() };
+    this.postTime = { hour: postDateTime.hour(), minute: postDateTime.minute() };
     this.displayEditDialog = true;
   }
 
-  onSavePost() {
-    // TODO: Save post
+  async onSavePost(): Promise<void> {
+    const postDateTime = moment({
+      ...this.postTime,
+      date: this.postDate.day,
+      month: this.postDate.month - 1
+    }).utc();
+    this.post.postDateTime = postDateTime.toISOString();
+    await this.schedulingService.updatePost(this.post);
+    this.displayEditDialog = false;
   }
 }
