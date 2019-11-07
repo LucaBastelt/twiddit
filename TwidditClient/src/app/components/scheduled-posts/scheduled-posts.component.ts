@@ -16,7 +16,7 @@ export class ScheduledPostsComponent implements OnInit {
   newPostDate: { day: number, month: number, year: number };
   newPostTime: { hour: number, minute: number };
 
-  public displayEditDialog: boolean;
+  public displayCreateDialog: boolean;
 
   constructor(public schedulingService: SchedulingService) {
   }
@@ -46,7 +46,7 @@ export class ScheduledPostsComponent implements OnInit {
     const postDateTime = moment().local();
     this.newPostDate = { day: postDateTime.date(), month: postDateTime.month() + 1, year: postDateTime.year() };
     this.newPostTime = { hour: postDateTime.hour(), minute: postDateTime.minute() };
-    this.displayEditDialog = true;
+    this.displayCreateDialog = true;
   }
 
   async onAddPost(): Promise<void> {
@@ -57,7 +57,7 @@ export class ScheduledPostsComponent implements OnInit {
     }).utc();
     this.newPost.postDateTime = postDateTime.toISOString();
     await this.schedulingService.addPost(this.newPost);
-    this.displayEditDialog = false;
+    this.displayCreateDialog = false;
     this.resetNewPost();
   }
 }

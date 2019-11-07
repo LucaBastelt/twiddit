@@ -7,6 +7,7 @@ import https from 'https';
 import path from 'path';
 import { ApiRouter } from './routes/routes';
 import {config as configureDotenvEnvironment} from 'dotenv';
+import { Scheduler } from './scheduler';
 configureDotenvEnvironment();
 
 // tslint:disable: no-var-requires
@@ -30,6 +31,9 @@ app.use('/api', ApiRouter);
 
 const port = parseInt(process.env.PORT || '4300', 10);
 app.set('port', port);
+
+const scheduler = new Scheduler();
+scheduler.initialize();
 
 try {
   const ssl = {

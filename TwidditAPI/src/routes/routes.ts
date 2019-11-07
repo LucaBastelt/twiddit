@@ -118,4 +118,82 @@ router.delete('/scheduled-posts/:postId', async (req, res, next) => {
     );
 });
 
+router.get('/twitter-oauth', async (req, res, next) => {
+  const db = await getConnection();
+  const userMail = req.user.email;
+  db.pool
+    .query('SELECT * FROM twitter_oauth WHERE userMail = $1;', [userMail])
+    .then((result) => {
+      if (result.rowCount > 0)
+        res.send(result.rows.pop().oauth);
+      else
+        res.status(404).send();
+    })
+    .catch((e) =>
+      setImmediate(() => {
+        console.error(e);
+        res.status(500).send(e);
+      }),
+    );
+});
+
+router.post('/twitter-oauth', async (req, res, next) => {
+  const db = await getConnection();
+  const userMail = req.user.email;
+  const oauth = req.body.oauth;
+  db.pool
+    .query('INSERT INTO twitter_oauth VALUES ($1, $2) ON CONFLICT (userMail) DO UPDATE SET oauth = $1 RETURNING *;', [userMail, oauth])
+    .then((result) => {
+      if (result.rowCount > 0) // TODO Validate oauth date
+        res.status(201).send(result.rows.pop().oauth);
+      else
+        res.status(404).send();
+    })
+    .catch((e) =>
+      setImmediate(() => {
+        console.error(e);
+        res.status(500).send(e);
+      }),
+    );
+});
+
+router.get('/reddit-oauth', async (req, res, next) => {
+  const db = await getConnection();
+  const userMail = req.user.email;
+  db.pool
+    .query('SELECT * FROM reddit_oauth WHERE userMail = $1;', [userMail])
+    .then((result) => {
+      if (result.rowCount > 0)
+        res.send(result.rows.pop().oauth);
+      else
+        res.status(404).send();
+    })
+    .catch((e) =>
+      setImmediate(() => {
+        console.error(e);
+        res.status(500).send(e);
+      }),
+    );
+});
+
+router.post('/reddit-oauth', async (req, res, next) => {
+  const db = await getConnection();
+  const userMail = req.user.email;
+  const oauth = req.body.oauth;
+  db.pool
+    .query('INSERT INTO reddit_oauth VALUES ($1, $2) ON CONFLICT (userMail) DO UPDATE SET oauth = $1 RETURNING *;', [userMail, oauth])
+    .then((result) => {
+      if (result.rowCount > 0) // TODO Validate oauth date
+        res.status(201).send(result.rows.pop().oauth);
+      else
+        res.status(404).send();
+    })
+    .catch((e) =>
+      setImmediate(() => {
+        console.error(e);
+        res.status(500).send(e);
+      }),
+    );
+});
+
 export const ApiRouter = router;
