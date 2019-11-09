@@ -1,1 +1,3 @@
 <p>reddit-login-page works!</p>
+<app-login></app-login>
+<span *ngIf="this.auth.getRedditOauth() | async as authToken">{{authToken}}</span>

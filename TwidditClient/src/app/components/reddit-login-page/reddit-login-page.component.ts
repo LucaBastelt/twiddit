@@ -1,6 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { filter } from 'rxjs/operators';
+import { OauthRegistryService } from 'src/app/services/oauth-registry.service';
 
 @Component({
   selector: 'app-reddit-login-page',
@@ -12,7 +13,7 @@ export class RedditLoginPageComponent implements OnInit {
   ngOnInit() {
   }
 
-  constructor() {
+  constructor(public auth: OauthRegistryService) {
   }
 
 }

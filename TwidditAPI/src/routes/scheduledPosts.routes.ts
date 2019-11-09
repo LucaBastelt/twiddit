@@ -1,30 +1,13 @@
-import express, { Request, Response } from 'express';
-import jwt from 'express-jwt';
-import jwksRsa from 'jwks-rsa';
+import express from 'express';
 const jwtDecode = require('jwt-decode');
 //const simple_oauth2 = require('simple-oauth2')
 
 import { getConnection } from '../model/databaseConnection';
 import { morphToScheduledPosts, morphToDatabaseScheduledPost } from '../model/toModelTransformation';
+import { checkJwt, handleAuthError } from './checkJwt.routes';
 
 
 const createRouter = () => {
-
-  const checkJwt = jwt({
-    // Dynamically provide a signing key
-    // based on the kid in the header and
-    // the signing keys provided by the JWKS endpoint.
-    secret: jwksRsa.expressJwtSecret({
-      cache: true,
-      jwksRequestsPerMinute: 5,
-      jwksUri: 'https://www.googleapis.com/oauth2/v3/certs',
-      rateLimit: true,
-    }),
-    // Validate the audience and the issuer.
-    algorithms: ['RS256'],
-    audience: process.env.GOOGLE_OIDC_API_CODE,
-    issuer: 'https://accounts.google.com',
-  });
 
   const router = express.Router();
   getConnection();
@@ -32,6 +15,7 @@ const createRouter = () => {
   if (process.env.NODE_ENV === 'production') {
     console.log('Using full jwt security check');
     router.use('/', checkJwt);
+    router.use('/', handleAuthError);
   } else {
     console.log('Using no jwt security check');
     router.use('/', (req, res, next) => {
@@ -44,14 +28,6 @@ const createRouter = () => {
       }
     });
   }
-
-  router.use((err: Error, req: Request, res: Response, next: () => any) => {
-    console.error('Error: ' + err.message);
-    console.error('' + err.stack);
-    if (err.name === 'UnauthorizedError') {
-      res.status(401).send([err, req.headers]);
-    }
-  });
 
   router.get('/scheduled-posts', async (req, res, next) => {
     const db = await getConnection();
@@ -120,86 +96,6 @@ const createRouter = () => {
         }),
       );
   });
-
-  /*router.get('/twitter-oauth', async (req, res, next) => {
-    const db = await getConnection();
-    const userMail = req.user.email;
-    db.pool
-      .query('SELECT * FROM twitter_oauth WHERE userMail = $1;', [userMail])
-      .then((result) => {
-        if (result.rowCount > 0)
-          res.send(result.rows.pop().oauth);
-        else
-          res.status(404).send();
-      })
-      .catch((e) =>
-        setImmediate(() => {
-          console.error(e);
-          res.status(500).send(e);
-        }),
-      );
-  });
-  
-  router.post('/twitter-oauth', async (req, res, next) => {
-    const db = await getConnection();
-    const userMail = req.user.email;
-    const oauth = req.body.oauth;
-    db.pool
-      .query('INSERT INTO twitter_oauth VALUES ($1, $2) ON CONFLICT (userMail) DO UPDATE SET oauth = $1 RETURNING *;', [userMail, oauth])
-      .then((result) => {
-        if (result.rowCount > 0) // TODO Validate oauth date
-          res.status(201).send(result.rows.pop().oauth);
-        else
-          res.status(404).send();
-      })
-      .catch((e) =>
-        setImmediate(() => {
-          console.error(e);
-          res.status(500).send(e);
-        }),
-      );
-  });
-  
-  router.get('/reddit-oauth', async (req, res, next) => {
-    const db = await getConnection();
-    const userMail = req.user.email;
-    db.pool
-      .query('SELECT * FROM reddit_oauth WHERE userMail = $1;', [userMail])
-      .then((result) => {
-        if (result.rowCount > 0)
-          res.send(result.rows.pop().oauth);
-        else
-          res.status(404).send();
-      })
-      .catch((e) =>
-        setImmediate(() => {
-          console.error(e);
-          res.status(500).send(e);
-        }),
-      );
-  });
-  
-  router.post('/reddit-oauth', async (req, res, next) => {
-    const db = await getConnection();
-    const userMail = req.user.email;
-    const oauth = req.body.oauth;
-    db.pool
-      .query('INSERT INTO reddit_oauth VALUES ($1, $2) ON CONFLICT (userMail) DO UPDATE SET oauth = $1 RETURNING *;', [userMail, oauth])
-      .then((result) => {
-        if (result.rowCount > 0) // TODO Validate oauth date
-          res.status(201).send(result.rows.pop().oauth);
-        else
-          res.status(404).send();
-      })
-      .catch((e) =>
-        setImmediate(() => {
-          console.error(e);
-          res.status(500).send(e);
-        }),
-      );
-  });*/
-
-
 
   /*const reddit_oauth2 = simple_oauth2.create({
     client: {

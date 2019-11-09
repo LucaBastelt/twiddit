@@ -5,8 +5,9 @@ import fs from 'fs';
 import http from 'http';
 import https from 'https';
 import path, { resolve } from 'path';
-import { CreateApiRouter } from './routes/routes';
-import {config as configureDotenvEnvironment} from 'dotenv';
+import { CreateApiRouter } from './routes/scheduledPosts.routes';
+import { CreateAuthRouter } from './routes/auth.routes';
+import { config as configureDotenvEnvironment } from 'dotenv';
 import { Scheduler } from './scheduler';
 configureDotenvEnvironment({ path: resolve(__dirname, '../.env') });
 
@@ -22,25 +23,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/api', CreateApiRouter());
-
-const simpleOAuth2Reddit = require('@jimmycode/simple-oauth2-reddit');
-
-const reddit = simpleOAuth2Reddit.create({
-  clientId: process.env.REDDIT_APP_ID,
-  clientSecret: process.env.REDDIT_APP_SECRET,
-  callbackURL: 'https://twiddit.tk/auth/reddit/callback',
-  state: '345bg34b345672bnb57245v745',
-  scope:  ['identity', 'submit', 'read'],
-});
-
-// Ask the user to authorize.
-app.get('/auth/reddit', reddit.authorize);
-
-// Exchange the token for the access token.
-app.get('/auth/reddit/callback', reddit.accessToken, (req, res) => {
-  console.log(req);
-  return res.status(200).json(req.token);
-});
+app.use('/auth', CreateAuthRouter());
 
 app.use('/twitter_login', express.static(path.join(__dirname, '../../TwidditClient/dist/Twiddit')));
 app.use('/reddit_login', express.static(path.join(__dirname, '../../TwidditClient/dist/Twiddit')));

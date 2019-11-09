@@ -7,8 +7,8 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class OauthRegistryService {
-  twitterApiPath = environment.apiUrl + '/twitter-oauth';
-  redditApiPath = environment.apiUrl + '/reddit-oauth';
+  twitterApiPath = environment.apiUrl + '/auth/twitter-oauth';
+  redditApiPath = environment.apiUrl + '/auth/reddit-oauth';
 
   postsInitialized = false;
 
@@ -27,7 +27,7 @@ export class OauthRegistryService {
 
   public isOauthExpired(oauth: string): boolean {
     try {
-      var decoded = jwt.verify(oauth, 'wrong-secret');
+      jwt.verify(oauth, 'wrong-secret');
       return true;
     } catch (err) {
       return false;
@@ -47,35 +47,9 @@ export class OauthRegistryService {
     }
   }
 
-  async setTwitterOauth(oauth: string): Promise<string> {
-    const response = await this.httpClient.post<string>(
-      this.twitterApiPath, { oauth },
-      { headers: this.defaultHeader, observe: 'response' }
-    ).toPromise();
-
-    if (200 <= response.status && response.status < 300) {
-      return response.body;
-    } else {
-      return undefined;
-    }
-  }
-
   public async getRedditOauth(): Promise<string> {
     const response = await this.httpClient.get<string>(
       this.redditApiPath,
-      { headers: this.defaultHeader, observe: 'response' }
-    ).toPromise();
-
-    if (200 <= response.status && response.status < 300) {
-      return response.body;
-    } else {
-      return undefined;
-    }
-  }
-
-  async setRedditOauth(oauth: string): Promise<string> {
-    const response = await this.httpClient.post<string>(
-      this.redditApiPath, { oauth },
       { headers: this.defaultHeader, observe: 'response' }
     ).toPromise();
 
