@@ -27,7 +27,7 @@ const createRouter = () => {
   });
 
   router.get('/reddit-auth-url', checkJwt, (req, res) => {
-    const userMail = req.user.email;
+    const userMail = req.user.email; // TODO To Base64
     const authorizationUri = reddit_oauth.authorizationCode.authorizeURL({
       redirect_uri: 'https://twiddit.tk/auth/reddit/callback',
       scope: ['identity'],
@@ -38,7 +38,7 @@ const createRouter = () => {
   });
 
   router.get('/reddit/callback', async (req, res) => {
-    const userMail = req.params.state;
+    const userMail = req.params.state; // TODO From Base64
     const code = req.query.code;
     const options = {
       code,
@@ -58,7 +58,7 @@ const createRouter = () => {
        [userMail, token.access_token, token.refresh_token]);
       console.log(queryResult.rows);
 
-      return res.redirect('/reddit_login');
+      return res.redirect('/');
     } catch (error) {
       console.error('Access Token Error', error.message);
       return res.status(500).json('Authentication failed');

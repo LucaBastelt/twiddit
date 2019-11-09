@@ -14,6 +14,7 @@ export class RedditLoginPageComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('Redirecting for login');
     this.auth.doRedditLogin();
   }
 

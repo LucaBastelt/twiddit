@@ -41,7 +41,7 @@ export class OauthRegistryService {
       console.log('Would redirect to: ' + url);
       //window.location.href = url;
     },
-      err => console.log(err));
+      err => console.error(err));
   }
 
   public getRedditOauthUrl(): Observable<string> {
@@ -64,7 +64,7 @@ export class OauthRegistryService {
         this.twitterApiPath,
         { headers: this.defaultHeader, observe: 'response' }
       ).toPromise()
-        .catch(e => console.log(e));
+        .catch(e => console.error(e));
 
       if (response && 200 <= response.status && response.status < 300) {
         return response.body;
@@ -82,7 +82,7 @@ export class OauthRegistryService {
         this.redditApiPath,
         { headers: this.defaultHeader, observe: 'response' }
       ).toPromise()
-        .catch(e => console.log(e));
+        .catch(e => console.error(e));
 
       if (response && 200 <= response.status && response.status < 300) {
         return response.body;
