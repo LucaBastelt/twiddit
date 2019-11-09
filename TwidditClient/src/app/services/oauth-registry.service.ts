@@ -54,28 +54,39 @@ export class OauthRegistryService {
   }
 
   public async getTwitterOauth(): Promise<string> {
-    const response = await this.httpClient.get<string>(
-      this.twitterApiPath,
-      { headers: this.defaultHeader, observe: 'response' }
-    ).toPromise();
+    try {
 
-    if (200 <= response.status && response.status < 300) {
-      return response.body;
-    } else {
-      return undefined;
+      const response = await this.httpClient.get<string>(
+        this.twitterApiPath,
+        { headers: this.defaultHeader, observe: 'response' }
+      ).toPromise()
+        .catch(e => console.log(e));
+
+      if (response && 200 <= response.status && response.status < 300) {
+        return response.body;
+      } else {
+        return '';
+      }
+    } catch (error) {
+      return '';
     }
   }
 
   public async getRedditOauth(): Promise<string> {
-    const response = await this.httpClient.get<string>(
-      this.redditApiPath,
-      { headers: this.defaultHeader, observe: 'response' }
-    ).toPromise();
+    try {
+      const response = await this.httpClient.get<string>(
+        this.redditApiPath,
+        { headers: this.defaultHeader, observe: 'response' }
+      ).toPromise()
+        .catch(e => console.log(e));
 
-    if (200 <= response.status && response.status < 300) {
-      return response.body;
-    } else {
-      return undefined;
+      if (response && 200 <= response.status && response.status < 300) {
+        return response.body;
+      } else {
+        return '';
+      }
+    } catch (error) {
+      return '';
     }
   }
 }
