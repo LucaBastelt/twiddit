@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { map, catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -35,23 +37,24 @@ export class OauthRegistryService {
   }
 
   public doRedditLogin(): void {
-    this.getRedditOauthUrl().then((url) => {
-      window.location.href = url;
-    });
+    this.getRedditOauthUrl().subscribe((url) => {
+      console.log('Would redirect to: ' + url);
+      //window.location.href = url;
+    },
+      err => console.log(err));
   }
 
-  public async getRedditOauthUrl(): Promise<string> {
-    const response = await this.httpClient.get<string>(
+  public getRedditOauthUrl(): Observable<string> {
+    return this.httpClient.get<string>(
       this.redditAuthUrlPath,
-      { headers: this.defaultHeader, observe: 'response' }
-    ).toPromise()
-    .catch(e => console.log(e));
-
-    if (response && 200 <= response.status && response.status < 300) {
-      return response.body;
-    } else {
-      return undefined;
-    }
+      { headers: this.defaultHeader, observe: 'response' })
+      .pipe(map(response => {
+        if (response && 200 <= response.status && response.status < 300) {
+          return response.body;
+        } else {
+          return undefined;
+        }
+      }));
   }
 
   public async getTwitterOauth(): Promise<string> {
