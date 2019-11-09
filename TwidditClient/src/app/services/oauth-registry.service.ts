@@ -23,7 +23,6 @@ export class OauthRegistryService {
     if (!environment.production) {
       this.defaultHeader = this.defaultHeader.set('Authorization', 'Bearer ' + this.dummyJwt);
     }
-    this.doRedditLogin();
   }
 
   public isOauthExpired(oauth: string): boolean {

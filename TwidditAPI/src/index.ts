@@ -22,8 +22,8 @@ app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use('/api/auth', CreateAuthRouter());
 app.use('/api', CreateApiRouter());
-app.use('/auth', CreateAuthRouter());
 
 app.use('/twitter_login', express.static(path.join(__dirname, '../../TwidditClient/dist/Twiddit')));
 app.use('/reddit_login', express.static(path.join(__dirname, '../../TwidditClient/dist/Twiddit')));
