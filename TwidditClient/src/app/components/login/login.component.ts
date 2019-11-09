@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { OAuthService } from 'angular-oauth2-oidc';
+import { OAuthService, JwksValidationHandler } from 'angular-oauth2-oidc';
+import { filter } from 'rxjs/operators';
+import { authConfig } from 'src/auth.config';
 
 @Component({
   selector: 'app-login',
@@ -12,6 +14,23 @@ export class LoginComponent implements OnInit {
   }
 
   constructor(public oauthService: OAuthService) {
+    this.configure();
+
+    this.oauthService.events
+      .pipe(filter(e => e.type === 'token_received'))
+      .subscribe(_ => {
+        this.oauthService.loadUserProfile();
+      });
+  }
+
+  private configure() {
+    this.oauthService.configure(authConfig);
+    this.oauthService.tokenValidationHandler = new JwksValidationHandler();
+    this.oauthService.loadDiscoveryDocumentAndTryLogin();
+    this.oauthService.events.subscribe(e => {
+      // tslint:disable-next-line:no-console
+      console.debug('oauth/oidc event', e);
+    });
   }
 
   public login() {
@@ -29,6 +48,4 @@ export class LoginComponent implements OnInit {
       }
       return claims.name;
   }
-
-
 }

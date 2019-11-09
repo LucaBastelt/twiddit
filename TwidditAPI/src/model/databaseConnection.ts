@@ -7,15 +7,7 @@ export class DatabaseConnection {
     public pool: Pool;
 
     constructor() {
-
-        var connectionStrings = {
-            user: process.env.PGUSER as string,
-            host: process.env.PGHOST as string,
-            database: process.env.PGDATABASE as string,
-            password: process.env.PGPASSWORD as string,
-            port: Number(process.env.PGPORT),
-        };
-        this.pool = new Pool(connectionStrings);
+        this.pool = new Pool();
         this.pool.on('error', (err, client) => {
             console.error('Unexpected error on idle client', err);
             process.exit(-1);
