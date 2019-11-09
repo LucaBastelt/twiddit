@@ -10,11 +10,11 @@ import { OauthRegistryService } from 'src/app/services/oauth-registry.service';
 })
 export class RedditLoginPageComponent implements OnInit {
 
-  ngOnInit() {
-    this.auth.doRedditLogin();
+  constructor(public auth: OauthRegistryService) {
   }
 
-  constructor(public auth: OauthRegistryService) {
+  ngOnInit() {
+    this.auth.doRedditLogin();
   }
 
 }

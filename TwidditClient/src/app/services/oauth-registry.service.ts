@@ -44,9 +44,10 @@ export class OauthRegistryService {
     const response = await this.httpClient.get<string>(
       this.redditAuthUrlPath,
       { headers: this.defaultHeader, observe: 'response' }
-    ).toPromise();
+    ).toPromise()
+    .catch(e => console.log(e));
 
-    if (200 <= response.status && response.status < 300) {
+    if (response && 200 <= response.status && response.status < 300) {
       return response.body;
     } else {
       return undefined;
