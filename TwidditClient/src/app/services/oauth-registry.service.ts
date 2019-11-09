@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import jwt from 'jsonwebtoken';
 import { environment } from 'src/environments/environment';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 
@@ -27,7 +26,7 @@ export class OauthRegistryService {
 
   public isOauthExpired(oauth: string): boolean {
     try {
-      jwt.verify(oauth, 'wrong-secret');
+      //jwt.verify(oauth, 'wrong-secret');
       return true;
     } catch (err) {
       return false;
