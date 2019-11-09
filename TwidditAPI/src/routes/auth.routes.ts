@@ -26,7 +26,7 @@ const createRouter = () => {
     }
   });
 
-  router.get('/reddit', checkJwt, (req, res) => {
+  router.get('/reddit-auth-url', checkJwt, (req, res) => {
     const userMail = req.user.email;
     const authorizationUri = reddit_oauth.authorizationCode.authorizeURL({
       redirect_uri: 'https://twiddit.tk/auth/reddit/callback',
@@ -34,7 +34,7 @@ const createRouter = () => {
       state: userMail
     });
 
-    res.redirect(authorizationUri);
+    res.send(authorizationUri);
   });
 
   router.get('/reddit/callback', async (req, res) => {

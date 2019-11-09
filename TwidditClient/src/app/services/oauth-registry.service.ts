@@ -7,6 +7,7 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 })
 export class OauthRegistryService {
   twitterApiPath = environment.apiUrl + '/auth/twitter-oauth';
+  redditAuthUrlPath = environment.apiUrl + '/auth/reddit-auth-url';
   redditApiPath = environment.apiUrl + '/auth/reddit-oauth';
 
   postsInitialized = false;
@@ -22,6 +23,7 @@ export class OauthRegistryService {
     if (!environment.production) {
       this.defaultHeader = this.defaultHeader.set('Authorization', 'Bearer ' + this.dummyJwt);
     }
+    this.doRedditLogin();
   }
 
   public isOauthExpired(oauth: string): boolean {
@@ -30,6 +32,25 @@ export class OauthRegistryService {
       return true;
     } catch (err) {
       return false;
+    }
+  }
+
+  public doRedditLogin(): void {
+    this.getRedditOauthUrl().then((url) => {
+      window.location.href = url;
+    });
+  }
+
+  public async getRedditOauthUrl(): Promise<string> {
+    const response = await this.httpClient.get<string>(
+      this.redditAuthUrlPath,
+      { headers: this.defaultHeader, observe: 'response' }
+    ).toPromise();
+
+    if (200 <= response.status && response.status < 300) {
+      return response.body;
+    } else {
+      return undefined;
     }
   }
 
