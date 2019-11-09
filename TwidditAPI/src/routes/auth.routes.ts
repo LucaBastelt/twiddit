@@ -34,7 +34,7 @@ const createRouter = () => {
       state: userMail
     });
 
-    res.send(authorizationUri);
+    res.send({authorizationUri});
   });
 
   router.get('/reddit/callback', async (req, res) => {
@@ -72,7 +72,7 @@ const createRouter = () => {
       .query('SELECT * FROM twitter_oauth WHERE userMail = $1;', [userMail])
       .then((result) => {
         if (result.rowCount > 0)
-          res.send(result.rows.pop().oauth);
+          res.send({oauth: result.rows.pop().oauth});
         else
           res.status(404).send();
       })
@@ -91,7 +91,7 @@ const createRouter = () => {
       .query('SELECT * FROM reddit_oauth WHERE userMail = $1;', [userMail])
       .then((result) => {
         if (result.rowCount > 0)
-          res.send(result.rows.pop().oauth);
+        res.send({oauth: result.rows.pop().oauth});
         else
           res.status(404).send();
       })
