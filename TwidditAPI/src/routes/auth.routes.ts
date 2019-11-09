@@ -65,7 +65,7 @@ const createRouter = () => {
     }
   });
 
-  router.get('/twitter-oauth', async (req, res, next) => {
+  router.get('/twitter-oauth', checkJwt, async (req, res, next) => {
     const db = await getConnection();
     const userMail = req.user.email;
     db.pool
@@ -84,7 +84,7 @@ const createRouter = () => {
       );
   });
 
-  router.get('/reddit-oauth', async (req, res, next) => {
+  router.get('/reddit-oauth', checkJwt, async (req, res, next) => {
     const db = await getConnection();
     const userMail = req.user.email;
     db.pool
