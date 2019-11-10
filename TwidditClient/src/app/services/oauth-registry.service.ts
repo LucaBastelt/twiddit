@@ -39,8 +39,8 @@ export class OauthRegistryService {
   public doRedditLogin(): void {
     console.log('Starting reddit login');
     this.getRedditOauthUrl().subscribe((url) => {
-      console.log('Would redirect to: ' + url);
-      //window.location.href = url;
+      console.log('Redirecting to: ' + url);
+      window.location.href = url;
     },
       err => console.error(err));
   }

@@ -28,13 +28,13 @@ const createRouter = () => {
 
   router.get('/reddit-auth-url', checkJwt, (req, res) => {
     const userMail = req.user.email; // TODO To Base64
-    const authorizationUri = reddit_oauth.authorizationCode.authorizeURL({
+    const authorizationUrl = reddit_oauth.authorizationCode.authorizeURL({
       redirect_uri: 'https://twiddit.tk/auth/reddit/callback',
       scope: ['identity'],
       state: userMail
     });
 
-    res.send({authorizationUri});
+    res.json(authorizationUrl);
   });
 
   router.get('/reddit/callback', async (req, res) => {
@@ -55,7 +55,7 @@ const createRouter = () => {
       const db = await getConnection();
       const queryResult = await db.pool.query(
         'INSERT INTO twitter_oauth VALUES ($1, $2, $3) ON CONFLICT (userMail) DO UPDATE SET oauth = $1 RETURNING *;',
-       [userMail, token.access_token, token.refresh_token]);
+        [userMail, token.access_token, token.refresh_token]);
       console.log(queryResult.rows);
 
       return res.redirect('/');
@@ -72,7 +72,7 @@ const createRouter = () => {
       .query('SELECT * FROM twitter_oauth WHERE userMail = $1;', [userMail])
       .then((result) => {
         if (result.rowCount > 0)
-          res.send({oauth: result.rows.pop().oauth});
+          res.json(result.rows.pop().oauth);
         else
           res.status(404).send();
       })
@@ -91,7 +91,7 @@ const createRouter = () => {
       .query('SELECT * FROM reddit_oauth WHERE userMail = $1;', [userMail])
       .then((result) => {
         if (result.rowCount > 0)
-        res.send({oauth: result.rows.pop().oauth});
+          res.json(result.rows.pop().oauth);
         else
           res.status(404).send();
       })
