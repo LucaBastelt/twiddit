@@ -1,8 +1,8 @@
 import express from 'express';
-const oauth2 = require('simple-oauth2')
 
 import { getConnection } from '../model/databaseConnection';
 import { checkJwt, handleAuthError } from './checkJwt.routes';
+import { reddit_oauth } from '../redditConnection';
 
 
 const createRouter = () => {
@@ -12,19 +12,7 @@ const createRouter = () => {
 
   router.use('/', handleAuthError);
 
-  const reddit_oauth = oauth2.create({
-    client: {
-      id: process.env.REDDIT_APP_ID,
-      secret: process.env.REDDIT_APP_SECRET
-    },
-    auth: {
-      authorizeHost: 'https://www.reddit.com',
-      authorizePath: '/api/v1/authorize',
 
-      tokenHost: 'https://www.reddit.com',
-      tokenPath: '/api/v1/access_token'
-    }
-  });
 
   router.get('/reddit-auth-url', checkJwt, (req, res) => {
     const userMail = Buffer.from(req.user.email).toString('base64');
@@ -40,7 +28,6 @@ const createRouter = () => {
 
   router.get('/reddit/callback', async (req, res) => {
     const userMail = Buffer.from(req.query.state, 'base64').toString('ascii');
-    console.log('decoded usermail: ' + userMail);
     const code = req.query.code;
     const options = {
       code,
@@ -61,12 +48,10 @@ const createRouter = () => {
         return res.status(500).json('Authentication failed');
       } else {
         const db = await getConnection();
-        const queryResult = await db.pool.query(
-          'INSERT INTO twitter_oauth VALUES ($1, $2, $3) ON CONFLICT (usermail) DO UPDATE SET oauth = $1 RETURNING *;',
-          [userMail, token.token.access_token, token.token.refresh_token]);
-        console.log(queryResult.rows);
-
-        return res.redirect('/');
+        await db.pool.query('DELETE FROM twitter_oauth WHERE userMail = $1;', [userMail]);
+        await db.pool.query('INSERT INTO twitter_oauth VALUES ($1, $2, $3, $4, $5);',
+          [userMail, token.token.access_token, token.token.refresh_token, token.token.expires_in, token.token.expires_at]);
+        return res.redirect('/reddit_login');
       }
       
     } catch (error) {
@@ -82,7 +67,7 @@ const createRouter = () => {
       .query('SELECT * FROM twitter_oauth WHERE userMail = $1;', [userMail])
       .then((result) => {
         if (result.rowCount > 0)
-          res.json(result.rows.pop().oauth);
+          res.json(result.rows.pop().access_token);
         else
           res.status(404).send();
       })
@@ -101,7 +86,7 @@ const createRouter = () => {
       .query('SELECT * FROM reddit_oauth WHERE userMail = $1;', [userMail])
       .then((result) => {
         if (result.rowCount > 0)
-          res.json(result.rows.pop().oauth);
+          res.json(result.rows.pop().access_token);
         else
           res.status(404).send();
       })

@@ -31,14 +31,18 @@ export class DatabaseConnection {
         await this.pool.query(
             'CREATE TABLE IF NOT EXISTS twiddit.twitter_oauth'
             + ' (userMail text NOT NULL UNIQUE, '
-            + 'oauth text NOT NULL, '
-            + 'refresh text NOT NULL);')
+            + 'access_token text NOT NULL, '
+            + 'refresh_token text NOT NULL, '
+            + 'expires_in text NOT NULL, '
+            + 'expires_at text NOT NULL);')
             .catch(console.log);
         await this.pool.query(
             'CREATE TABLE IF NOT EXISTS twiddit.reddit_oauth'
             + ' (userMail text NOT NULL UNIQUE, '
-            + 'oauth text NOT NULL, '
-            + 'refresh text NOT NULL);')
+            + 'access_token text NOT NULL, '
+            + 'refresh_token text NOT NULL, '
+            + 'expires_in text NOT NULL, '
+            + 'expires_at text NOT NULL);')
             .catch(console.log);
     }
 }

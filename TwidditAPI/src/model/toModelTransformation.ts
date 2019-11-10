@@ -3,6 +3,7 @@ import { morphism, StrictSchema } from 'morphism';
 // What we have
 export interface DatabaseScheduledPost {
     id: number;
+    userMail: string;
     reddittitle: string;
     subreddit: string;
     nsfw: boolean;
@@ -13,6 +14,7 @@ export interface DatabaseScheduledPost {
 
 export interface ScheduledPost {
     id: number;
+    userMail: string;
     postDateTime: string;
     imageUrl: string;
     twitter: {
@@ -27,6 +29,7 @@ export interface ScheduledPost {
 
 export const ScheduledPostSchema = {
     id: 'id',
+    userMail: 'userMail',
     postDateTime: 'postdatetime',
     imageUrl: 'imageurl',
     twitter: {
@@ -41,6 +44,7 @@ export const ScheduledPostSchema = {
 
 export const DatabaseScheduledPostSchema = {
     id: 'id',
+    userMail: 'userMail',
     postdatetime: 'postDateTime',
     imageurl: 'imageUrl',
     twittertext: (it: ScheduledPost) => {

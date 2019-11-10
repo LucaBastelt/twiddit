@@ -2,6 +2,7 @@
 import schedule from 'node-schedule';
 import { getConnection } from './model/databaseConnection';
 import { morphToScheduledPosts } from './model/toModelTransformation';
+import { getRedditToken } from './redditConnection';
 
 export class Scheduler {
 
@@ -22,6 +23,8 @@ export class Scheduler {
                     // TODO Post to twitter
                 }
                 if (post.reddit && post.reddit.title  && post.reddit.subreddit){
+                    //const token = 
+                    await getRedditToken(post.userMail);
                     // TODO Post to reddit
                 }
             }
