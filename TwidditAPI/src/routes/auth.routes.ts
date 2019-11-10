@@ -42,7 +42,8 @@ const createRouter = () => {
     const code = req.query.code;
     const options = {
       code,
-      state: userMail,
+      redirect_uri: 'https://twiddit.tk/api/auth/reddit/callback',
+      scope: ['identity', 'submit', 'read', 'flair'],
     };
 
     try {
@@ -51,14 +52,20 @@ const createRouter = () => {
 
       // Exchange for the access token.
       const token = reddit_oauth.accessToken.create(result);
+      if (!token.access_token){
+        console.error('Token not created');
+        console.error(token);
+        return res.status(500).json('Authentication failed');
+      } else {
+        const db = await getConnection();
+        const queryResult = await db.pool.query(
+          'INSERT INTO twitter_oauth VALUES ($1, $2, $3) ON CONFLICT (usermail) DO UPDATE SET oauth = $1 RETURNING *;',
+          [userMail, token.access_token, token.refresh_token]);
+        console.log(queryResult.rows);
 
-      const db = await getConnection();
-      const queryResult = await db.pool.query(
-        'INSERT INTO twitter_oauth VALUES ($1, $2, $3) ON CONFLICT (usermail) DO UPDATE SET oauth = $1 RETURNING *;',
-        [userMail, token.access_token, token.refresh_token]);
-      console.log(queryResult.rows);
-
-      return res.redirect('/');
+        return res.redirect('/');
+      }
+      
     } catch (error) {
       console.error('Access Token Error', error.message);
       return res.status(500).json('Authentication failed');
