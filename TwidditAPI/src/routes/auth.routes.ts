@@ -2,7 +2,7 @@ import express from 'express';
 
 import { getConnection } from '../model/databaseConnection';
 import { checkJwt, handleAuthError } from './checkJwt.routes';
-import { reddit_oauth } from '../redditConnection';
+import { getRedditOauthConfig } from '../redditConnection';
 
 
 const createRouter = () => {
@@ -16,7 +16,7 @@ const createRouter = () => {
 
   router.get('/reddit-auth-url', checkJwt, (req, res) => {
     const userMail = Buffer.from(req.user.email).toString('base64');
-    const authorizationUrl = reddit_oauth.authorizationCode.authorizeURL({
+    const authorizationUrl = getRedditOauthConfig().authorizationCode.authorizeURL({
       redirect_uri: 'https://twiddit.tk/api/auth/reddit/callback',
       scope: ['identity', 'submit', 'read', 'flair'],
       state: userMail,
@@ -38,10 +38,10 @@ const createRouter = () => {
 
     try {
       // The resulting token.
-      const result = await reddit_oauth.authorizationCode.getToken(options);
+      const result = await getRedditOauthConfig().authorizationCode.getToken(options);
 
       // Exchange for the access token.
-      const token = reddit_oauth.accessToken.create(result);
+      const token = getRedditOauthConfig().accessToken.create(result);
       if (!token.token.access_token){
         console.error('Token not created');
         console.error(token);
