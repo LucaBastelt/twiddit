@@ -27,23 +27,26 @@ const createRouter = () => {
   });
 
   router.get('/reddit-auth-url', checkJwt, (req, res) => {
-    const userMail = req.user.email; // TODO To Base64
+    const userMail = Buffer.from(req.user.email).toString('base64');
     const authorizationUrl = reddit_oauth.authorizationCode.authorizeURL({
       redirect_uri: 'https://twiddit.tk/api/auth/reddit/callback',
-      scope: ['identity'],
-      state: userMail
+      scope: ['identity', 'submit', 'read', 'flair'],
+      state: userMail,
+      duration: 'permanent',
     });
 
     res.json(authorizationUrl);
   });
 
   router.get('/reddit/callback', async (req, res) => {
-    const userMail = req.query.state; // TODO From Base64
+    const userMail = Buffer.from(req.query.state, 'base64').toString('ascii');
+    console.log('decoded usermail: ' + userMail);
     const code = req.query.code;
     const options = {
       code,
       redirect_uri: 'https://twiddit.tk/api/auth/reddit/callback',
       scope: ['identity', 'submit', 'read', 'flair'],
+      state: userMail,
     };
 
     try {
@@ -52,7 +55,7 @@ const createRouter = () => {
 
       // Exchange for the access token.
       const token = reddit_oauth.accessToken.create(result);
-      if (!token.access_token){
+      if (!token.token.access_token){
         console.error('Token not created');
         console.error(token);
         return res.status(500).json('Authentication failed');
@@ -60,7 +63,7 @@ const createRouter = () => {
         const db = await getConnection();
         const queryResult = await db.pool.query(
           'INSERT INTO twitter_oauth VALUES ($1, $2, $3) ON CONFLICT (usermail) DO UPDATE SET oauth = $1 RETURNING *;',
-          [userMail, token.access_token, token.refresh_token]);
+          [userMail, token.token.access_token, token.token.refresh_token]);
         console.log(queryResult.rows);
 
         return res.redirect('/');
