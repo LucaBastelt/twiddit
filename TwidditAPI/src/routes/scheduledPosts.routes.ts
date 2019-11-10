@@ -97,52 +97,6 @@ const createRouter = () => {
       );
   });
 
-  /*const reddit_oauth2 = simple_oauth2.create({
-    client: {
-      id: process.env.REDDIT_APP_ID,
-      secret: process.env.REDDIT_APP_SECRET
-    },
-    auth: {
-      authorizeHost: 'https://www.reddit.com',
-      authorizePath: '/api/v1/authorize',
-   
-      tokenHost: 'https://www.reddit.com',
-      tokenPath: '/api/v1/access_token'
-    }
-  });
-   
-  router.get('/auth/reddit', (req, res) => {
-    const authorizationUri = reddit_oauth2.authorizationCode.authorizeURL({
-      redirect_uri: 'http://twiddit.tk/api/auth/reddit/callback',
-      scope: ['identity', 'submit', 'read'],
-      state: '5678jd8jm578'
-    });
-   
-    res.redirect(authorizationUri);
-  });
-   
-  router.get('/auth/reddit/callback', async(req, res) => {
-    const code = req.query.code;
-    const options = {
-      code,
-      state: '5678jd8jm578',
-      redirect_uri: 'http://twiddit.tk/api/auth/reddit/callback'
-    };
-   
-    try {
-      // The resulting token.
-      const result = await reddit_oauth2.authorizationCode.getToken(options);
-   
-      // Exchange for the access token.
-      const token = reddit_oauth2.accessToken.create(result);
-   
-      return res.status(200).json(token);
-    } catch (error) {
-      console.error('Access Token Error', error.message);
-      return res.status(500).json('Authentication failed');
-    }
-  });*/
-
   return router;
 }
 
