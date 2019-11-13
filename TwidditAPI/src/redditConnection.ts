@@ -34,6 +34,7 @@ export async function refreshToken(token: { access_token: string, refresh_token:
             };
 
             accessToken = await accessToken.refresh(params);
+            // TODO save new token to db
             return accessToken.token;
         } catch (error) {
             console.log('Error refreshing access token: ', error.message);
