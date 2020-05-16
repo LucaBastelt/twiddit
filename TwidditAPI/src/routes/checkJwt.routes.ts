@@ -1,5 +1,30 @@
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
+import { NextFunction, Response, Request } from 'express';
+import { Router } from 'express';
+const jwtDecode = require('jwt-decode');
+//const simple_oauth2 = require('simple-oauth2')
+
+
+export function getJwtCheckFuncs(router: Router) {
+    if (process.env.NODE_ENV === 'production') {
+        console.log('Using full jwt security check');
+        return [checkJwt, handleAuthError];
+    }
+    else {
+        console.log('Using no jwt security check');
+        return [(req: Request, res: Response, next: NextFunction) => {
+            if (req.headers.authorization) {
+                req.user = jwtDecode(req.headers.authorization);
+                next();
+            }
+            else {
+                console.log('request discarded due to missing auth header');
+                res.status(401).send(['Unauthorized, no auth header', req.headers]);
+            }
+        }];
+    }
+}
 
 export const checkJwt = jwt({
     // Dynamically provide a signing key

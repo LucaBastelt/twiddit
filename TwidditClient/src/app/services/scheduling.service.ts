@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as moment from 'moment';
 import { Observable, of, Subject } from 'rxjs';
@@ -24,6 +24,8 @@ export class SchedulingService {
   constructor(private httpClient: HttpClient) {
     this.defaultHeader = new HttpHeaders();
     this.defaultHeader = this.defaultHeader.set('Content-Type', 'application/json');
+    this.defaultHeader = this.defaultHeader.set('Pragma', 'no-cache');
+    this.defaultHeader = this.defaultHeader.set('Expires', '0');
     if (!environment.production) {
       this.defaultHeader = this.defaultHeader.set('Authorization', 'Bearer ' + this.dummyJwt);
     }
@@ -34,7 +36,10 @@ export class SchedulingService {
   }
 
   reloadPosts(): Observable<ScheduledPost[]> {
-    this.httpClient.get<ScheduledPost[]>(this.apiPath, { headers: this.defaultHeader }).subscribe( posts => {
+    this.httpClient.get<ScheduledPost[]>(this.apiPath, {
+      params: new HttpParams().set('cache-control', (Math.random() * 100000).toFixed(0).toString()),
+      headers: this.defaultHeader
+    }).subscribe(posts => {
       this.scheduledPosts$.next(posts);
     });
 

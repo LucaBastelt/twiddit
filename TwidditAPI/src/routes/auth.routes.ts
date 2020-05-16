@@ -1,23 +1,27 @@
 import express from 'express';
 
 import { getConnection } from '../model/databaseConnection';
-import { checkJwt, handleAuthError } from './checkJwt.routes';
 import { getRedditOauthConfig } from '../redditConnection';
+import { AuthorizationTokenConfig } from 'simple-oauth2';
+import { getJwtCheckFuncs } from './checkJwt.routes';
 
+const redditRedirectUri = 'http://localhost:4300/api/auth/reddit/callback';
 
 const createRouter = () => {
 
   const router = express.Router();
   getConnection();
 
-  router.use('/', handleAuthError);
+  const jwtCheck = getJwtCheckFuncs(router);
 
+  router.get('/reddit-auth-url', jwtCheck);
+  router.get('/twitter-oauth', jwtCheck);
+  router.get('/reddit-oauth', jwtCheck);
 
-
-  router.get('/reddit-auth-url', checkJwt, (req, res) => {
+  router.get('/reddit-auth-url', (req, res) => {
     const userMail = Buffer.from(req.user.email).toString('base64');
     const authorizationUrl = getRedditOauthConfig().authorizationCode.authorizeURL({
-      redirect_uri: 'https://twiddit.tk/api/auth/reddit/callback',
+      redirect_uri: redditRedirectUri,
       scope: ['identity', 'submit', 'read', 'flair'],
       state: userMail,
       duration: 'permanent',
@@ -27,40 +31,40 @@ const createRouter = () => {
   });
 
   router.get('/reddit/callback', async (req, res) => {
-    const userMail = Buffer.from(req.query.state, 'base64').toString('ascii');
-    const code = req.query.code;
+    const userMail = Buffer.from(req.query.state as string, 'base64').toString('ascii');
     const options = {
-      code,
-      redirect_uri: 'https://twiddit.tk/api/auth/reddit/callback',
+      code: req.query.code,
+      redirect_uri: redditRedirectUri,
       scope: ['identity', 'submit', 'read', 'flair'],
       state: userMail,
-    };
+    } as AuthorizationTokenConfig;
 
     try {
+      const oauthConfig = getRedditOauthConfig();
       // The resulting token.
-      const result = await getRedditOauthConfig().authorizationCode.getToken(options);
+      const result = await oauthConfig.authorizationCode.getToken(options);
 
       // Exchange for the access token.
-      const token = getRedditOauthConfig().accessToken.create(result);
-      if (!token.token.access_token){
+      const token = oauthConfig.accessToken.create(result);
+      if (!token.token.access_token) {
         console.error('Token not created');
         console.error(token);
         return res.status(500).json('Authentication failed');
       } else {
         const db = await getConnection();
-        await db.pool.query('DELETE FROM twitter_oauth WHERE userMail = $1;', [userMail]);
-        await db.pool.query('INSERT INTO twitter_oauth VALUES ($1, $2, $3, $4, $5);',
+        await db.pool.query('DELETE FROM reddit_oauth WHERE userMail = $1;', [userMail]);
+        await db.pool.query('INSERT INTO reddit_oauth VALUES ($1, $2, $3, $4, $5);',
           [userMail, token.token.access_token, token.token.refresh_token, token.token.expires_in, token.token.expires_at]);
         return res.redirect('/reddit_login');
       }
-      
+
     } catch (error) {
       console.error('Access Token Error', error.message);
       return res.status(500).json('Authentication failed');
     }
   });
 
-  router.get('/twitter-oauth', checkJwt, async (req, res, next) => {
+  router.get('/twitter-oauth', async (req, res, next) => {
     const db = await getConnection();
     const userMail = req.user.email;
     db.pool
@@ -79,7 +83,7 @@ const createRouter = () => {
       );
   });
 
-  router.get('/reddit-oauth', checkJwt, async (req, res, next) => {
+  router.get('/reddit-oauth', async (req, res, next) => {
     const db = await getConnection();
     const userMail = req.user.email;
     db.pool

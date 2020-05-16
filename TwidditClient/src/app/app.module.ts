@@ -46,7 +46,7 @@ const appRoutes: Routes = [
     BrowserModule,
     OAuthModule.forRoot({
       resourceServer: {
-        allowedUrls: ['https://twiddit.tk/api'],
+        allowedUrls: ['https://twiddit.tk/api', 'http://localhost/api'],
         sendAccessToken: true
       }
     }),

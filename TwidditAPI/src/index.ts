@@ -30,6 +30,7 @@ app.use('/reddit_login', express.static(path.join(__dirname, '../../TwidditClien
 app.use(express.static(path.join(__dirname, '../../TwidditClient/dist/Twiddit')));
 
 const port = parseInt(process.env.PORT || '4300', 10);
+console.log('running on port', port);
 app.set('port', port);
 
 const scheduler = new Scheduler();

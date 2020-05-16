@@ -1,10 +1,8 @@
-import express from 'express';
-const jwtDecode = require('jwt-decode');
-//const simple_oauth2 = require('simple-oauth2')
+import express, { Request, Response, NextFunction } from 'express';
 
 import { getConnection } from '../model/databaseConnection';
 import { morphToScheduledPosts, morphToDatabaseScheduledPost } from '../model/toModelTransformation';
-import { checkJwt, handleAuthError } from './checkJwt.routes';
+import { getJwtCheckFuncs } from './checkJwt.routes';
 
 
 const createRouter = () => {
@@ -12,24 +10,11 @@ const createRouter = () => {
   const router = express.Router();
   getConnection();
 
-  if (process.env.NODE_ENV === 'production') {
-    console.log('Using full jwt security check');
-    router.use('/', checkJwt);
-    router.use('/', handleAuthError);
-  } else {
-    console.log('Using no jwt security check');
-    router.use('/', (req, res, next) => {
-      if (req.headers.authorization) {
-        req.user = jwtDecode(req.headers.authorization);
-        next();
-      }
-      else {
-        res.status(401).send(['Unauthorized, no auth header', req.headers]);
-      }
-    });
-  }
+  const jwtCheck = getJwtCheckFuncs(router);
 
-  router.get('/scheduled-posts', async (req, res, next) => {
+  router.all(/\/scheduled-posts.*/, jwtCheck);
+
+  router.get('/scheduled-posts', async (req: Request, res: Response, next: NextFunction) => {
     const db = await getConnection();
     const userMail = req.user.email;
     db.pool
