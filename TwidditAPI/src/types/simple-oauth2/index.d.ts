@@ -56,7 +56,10 @@ declare module 'simple-oauth2' {
     export type TokenType = "access_token" | "refresh_token";
 
     export interface Token {
-        [x: string]: any;
+        access_token: string;
+        expires_in: number;
+        expires_at: string;
+        refresh_token: string;
     }
 
     export interface AccessToken {

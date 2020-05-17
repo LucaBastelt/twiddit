@@ -9,10 +9,13 @@ export class Scheduler {
     public initialize(): void {
 
         // Each minute check posts to post
-        schedule.scheduleJob({ minute: 1 }, this.run);
+        var rule = new schedule.RecurrenceRule();
+        rule.minute = new schedule.Range(0, 59);
+        schedule.scheduleJob('posting', rule, this.run);
     }
 
     private async run(): Promise<void> {
+        const token = await getRedditToken('atlantkogm@gmail.com');
         const db = await getConnection();
         try {
             const queryResult = await db.pool.query('SELECT * FROM twiddit.scheduledposts WHERE postdatetime::timestamptz < NOW();');
@@ -23,8 +26,7 @@ export class Scheduler {
                     // TODO Post to twitter
                 }
                 if (post.reddit && post.reddit.title  && post.reddit.subreddit){
-                    //const token = 
-                    await getRedditToken(post.userMail);
+                    const token = await getRedditToken(post.userMail);
                     // TODO Post to reddit
                 }
             }

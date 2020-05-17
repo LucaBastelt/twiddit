@@ -9,6 +9,7 @@ import { CreateApiRouter } from './routes/scheduledPosts.routes';
 import { CreateAuthRouter } from './routes/auth.routes';
 import { config as configureDotenvEnvironment } from 'dotenv';
 import { Scheduler } from './scheduler';
+import * as cors from 'cors';
 configureDotenvEnvironment({ path: resolve(__dirname, '../.env') });
 
 // tslint:disable: no-var-requires
@@ -18,6 +19,7 @@ console.log('starting twiddit server');
 
 const app = express();
 app.use(compression());
+app.use(cors.default());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

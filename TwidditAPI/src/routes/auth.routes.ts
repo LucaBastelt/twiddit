@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { getConnection } from '../model/databaseConnection';
-import { getRedditOauthConfig } from '../redditConnection';
+import { getRedditOauthConfig, getRedditToken, redditScopes } from '../redditConnection';
 import { AuthorizationTokenConfig } from 'simple-oauth2';
 import { getJwtCheckFuncs } from './checkJwt.routes';
 
@@ -14,15 +14,15 @@ const createRouter = () => {
 
   const jwtCheck = getJwtCheckFuncs(router);
 
-  router.get('/reddit-auth-url', jwtCheck);
-  router.get('/twitter-oauth', jwtCheck);
-  router.get('/reddit-oauth', jwtCheck);
+  router.all('/reddit-auth-url', jwtCheck);
+  router.all('/twitter-oauth', jwtCheck);
+  router.all('/reddit-oauth', jwtCheck);
 
   router.get('/reddit-auth-url', (req, res) => {
     const userMail = Buffer.from(req.user.email).toString('base64');
     const authorizationUrl = getRedditOauthConfig().authorizationCode.authorizeURL({
       redirect_uri: redditRedirectUri,
-      scope: ['identity', 'submit', 'read', 'flair'],
+      scope: redditScopes,
       state: userMail,
       duration: 'permanent',
     });
@@ -35,7 +35,7 @@ const createRouter = () => {
     const options = {
       code: req.query.code,
       redirect_uri: redditRedirectUri,
-      scope: ['identity', 'submit', 'read', 'flair'],
+      scope: redditScopes,
       state: userMail,
     } as AuthorizationTokenConfig;
 
@@ -84,22 +84,21 @@ const createRouter = () => {
   });
 
   router.get('/reddit-oauth', async (req, res, next) => {
+    const userMail = req.user.email;
+    const token = await getRedditToken(userMail);
+    if (token)
+      res.json(token.access_token);
+    else
+      res.status(404).send();
+  });
+
+  router.delete('/reddit-oauth', async (req, res, next) => {
     const db = await getConnection();
     const userMail = req.user.email;
-    db.pool
-      .query('SELECT * FROM reddit_oauth WHERE userMail = $1;', [userMail])
-      .then((result) => {
-        if (result.rowCount > 0)
-          res.json(result.rows.pop().access_token);
-        else
-          res.status(404).send();
-      })
-      .catch((e) =>
-        setImmediate(() => {
-          console.error(e);
-          res.status(500).send(e);
-        }),
-      );
+
+    await db.pool.query('DELETE FROM reddit_oauth WHERE userMail = $1', [userMail]);
+
+    res.status(200).send();
   });
 
   return router;

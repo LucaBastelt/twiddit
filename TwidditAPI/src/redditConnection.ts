@@ -23,9 +23,13 @@ export function getRedditOauthConfig(): OAuthClient {
     return reddit_oauth_config as OAuthClient;
 }
 
-export async function refreshToken(token: { access_token: string, refresh_token: string, expires_in: number, expires_at: string }): Promise<Token | undefined> {
-    let accessToken = getRedditOauthConfig().accessToken.create(token);
+export const redditScopes = ['identity', 'submit', 'read', 'flair'];
 
+export async function refreshRedditToken(token: { access_token: string, refresh_token: string, expires_in: number, expires_at: string }): Promise<Token | undefined> {
+
+    const db = await getConnection();
+    let accessToken = getRedditOauthConfig().accessToken.create(token);
+    
     // Check if the token is expired. If expired it is refreshed.
     if (accessToken.expired()) {
         try {
@@ -34,21 +38,28 @@ export async function refreshToken(token: { access_token: string, refresh_token:
             };
 
             accessToken = await accessToken.refresh(params);
-            // TODO save new token to db
-            return accessToken.token;
+            await db.pool.query(
+                'UPDATE reddit_oauth SET access_token = $2, expires_in = $3, expires_at = $4 WHERE access_token = $1;',
+                [
+                    token.access_token,
+                    accessToken.token.access_token,
+                    accessToken.token.expires_in,
+                    accessToken.token.expires_at
+                ]);
         } catch (error) {
+            db.pool.query('DELETE FROM reddit_oauth WHERE WHERE access_token = $1;', [token.access_token]);
             console.log('Error refreshing access token: ', error.message);
         }
     }
-    return undefined;
+    return accessToken.token;
 }
 
 export async function getRedditToken(userMail: string): Promise<Token | undefined> {
     const db = await getConnection();
     var queryResult = await db.pool.query('SELECT * FROM twiddit.reddit_oauth WHERE usermail = $1;', [userMail]);
     if (queryResult.rowCount > 0) {
-        const token = queryResult.rows[0];
-        return await refreshToken(token);
+        const token = queryResult.rows[0] as { access_token: string, refresh_token: string, expires_in: number, expires_at: string };
+        return await refreshRedditToken(token);
     }
     return undefined;
 }
