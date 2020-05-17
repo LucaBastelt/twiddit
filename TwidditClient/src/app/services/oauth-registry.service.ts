@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OauthRegistryService {
-  twitterApiPath = environment.apiUrl + '/auth/twitter-oauth';
+  twitterTokenPath = environment.apiUrl + '/auth/twitter-oauth';
   redditAuthUrlPath = environment.apiUrl + '/auth/reddit-auth-url';
-  redditApiPath = environment.apiUrl + '/auth/reddit-oauth';
+  redditTokenPath = environment.apiUrl + '/auth/reddit-oauth';
 
   postsInitialized = false;
 
@@ -45,6 +45,10 @@ export class OauthRegistryService {
       err => console.error(err));
   }
 
+  doRedditLogout(): Promise<object> {
+    return this.httpClient.delete(this.redditTokenPath, { headers: this.defaultHeader }).toPromise();
+  }
+
   public getRedditOauthUrl(): Observable<string> {
     return this.httpClient.get<string>(
       this.redditAuthUrlPath,
@@ -58,11 +62,11 @@ export class OauthRegistryService {
       }));
   }
 
-  public async getTwitterOauth(): Promise<string> {
+  public async getTwitterOauthToken(): Promise<string> {
     try {
 
       const response = await this.httpClient.get<string>(
-        this.twitterApiPath,
+        this.twitterTokenPath,
         { headers: this.defaultHeader, observe: 'response' }
       ).toPromise()
         .catch(e => console.error(e));
@@ -77,21 +81,18 @@ export class OauthRegistryService {
     }
   }
 
-  public async getRedditOauth(): Promise<string> {
-    try {
-      const response = await this.httpClient.get<string>(
-        this.redditApiPath,
-        { headers: this.defaultHeader, observe: 'response' }
-      ).toPromise()
-        .catch(e => console.error(e));
-
-      if (response && 200 <= response.status && response.status < 300) {
-        return response.body;
-      } else {
-        return '';
-      }
-    } catch (error) {
-      return '';
-    }
+  public getRedditOauthToken(): Observable<string> {
+    return this.httpClient.get<string>(
+      this.redditTokenPath,
+      { headers: this.defaultHeader, observe: 'response' }
+    ).pipe(
+      map(response => {
+        if (response && 200 <= response.status && response.status < 300) {
+          return response.body;
+        } else {
+          return undefined;
+        }
+      }),
+      catchError(e => of(undefined)));
   }
 }

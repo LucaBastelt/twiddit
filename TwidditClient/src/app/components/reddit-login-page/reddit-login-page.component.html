@@ -1,5 +1,22 @@
 <app-login></app-login>
 
-<button pButton class="ui-button-raised" (click)="this.auth.doRedditLogin()" style="margin-left: 20px;width: 60px;height: 25px;">
-    Login with Reddit
-</button>
+<ng-container *ngIf="!(redditToken$ | async)">
+    <button pButton class="ui-button-success" (click)="login()" style="margin: 20px;width: 160px;height: 25px;">
+        Login with Reddit
+    </button>
+</ng-container>
+
+<ng-container *ngIf="redditToken$ | async as token">
+    <button pButton *ngIf="token !== undefined && token !== '-'" class="ui-button-danger" (click)="logout()"
+        style="margin: 20px;width: 160px;height: 25px;">
+        Logout of Reddit
+    </button>
+
+    <br>
+
+    <ng-container *ngIf="identity$ | async as identity">
+        <img src="{{identity.icon_img}}" width="50" style="margin: 10px;">Angemeldet als <a target="blank"
+            href="https://reddit.com/u/{{identity.name}}">{{identity.name}}</a><br>
+
+    </ng-container>
+</ng-container>
