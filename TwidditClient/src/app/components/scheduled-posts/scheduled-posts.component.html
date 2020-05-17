@@ -1,4 +1,3 @@
-
 <ng-container *ngIf="scheduledPosts$ | async as scheduledPosts">
   <p-dataView [value]="scheduledPosts">
     <p-header>
@@ -11,35 +10,23 @@
     </p-footer>
     <ng-template let-post pTemplate="listItem">
       <div>
-        <app-scheduled-post-line
-          [post]="post"
-          class="ui-g"
-          style="padding: 1em;margin: 5px;border: 1px solid #d9d9d9"
-        ></app-scheduled-post-line>
+        <app-scheduled-post-line [post]="post" class="ui-g" style="padding: 1em;margin: 5px;border: 1px solid #d9d9d9">
+        </app-scheduled-post-line>
       </div>
     </ng-template>
     <ng-template let-post pTemplate="gridItem">
       <div style="padding:.5em" class="">
-        <p-panel
-          [header]="this.schedulingService.formatDateHeader(post.postDateTime)"
-          [style]="{ 'text-align': 'center' }"
-        >
+        <p-panel [header]="this.schedulingService.formatDateHeader(post.postDateTime)"
+          [style]="{ 'text-align': 'center' }">
           <span *ngIf="post.twitter.text != ''">
-            <img
-              src="../../../assets/img/Twitter_Social_Icon_Circle_Color.png"
-              class="social-icon"
-              alt="Twitter Logo"
-            />
+            <img src="../../../assets/img/Twitter_Social_Icon_Circle_Color.png" class="social-icon"
+              alt="Twitter Logo" />
             &nbsp;
             {{ post.twitter.text }}
           </span>
           <span *ngIf="post.twitter.text != '' && post.reddit.title != ''"><br /></span>
           <span *ngIf="post.reddit.title != ''">
-            <img
-              src="../../../assets/img/reddit_share_circle_128.png"
-              class="social-icon"
-              alt="Reddit Logo"
-            />
+            <img src="../../../assets/img/reddit_share_circle_128.png" class="social-icon" alt="Reddit Logo" />
             &nbsp;
             {{ post.reddit.title }}
           </span>
@@ -49,8 +36,8 @@
   </p-dataView>
 </ng-container>
 
-<p-dialog header="Create new Post" [(visible)]="displayCreateDialog" [closable]="true" [dismissableMask]="true" [modal]="true"
-  [resizable]="true" [style]="{height: '300px', width: '650px'}" [baseZIndex]="000">
+<p-dialog header="Create new Post" [(visible)]="displayCreateDialog" [closable]="true" [dismissableMask]="true"
+  [modal]="true" [resizable]="true" [style]="{height: '300px', width: '650px'}" [baseZIndex]="000">
   <div class="ui-g">
 
     <form (submit)="this.onAddPost()" class="ui-g-12">

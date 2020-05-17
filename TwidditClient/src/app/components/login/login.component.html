@@ -1,4 +1,4 @@
-<h1>
+<h1 [routerLink]="['/']">
     <span class="twi">Twi</span><span class="ddit">ddit</span>
 </h1>
 <h2 *ngIf="this.oauthService.hasValidIdToken()">
@@ -7,10 +7,25 @@
 
 <hr>
 
-<button pButton class="ui-button-raised" (click)="login()" *ngIf="!this.oauthService.hasValidIdToken()" style="margin-left: 20px;width: 60px;height: 25px;">
+<button pButton (click)="login()" *ngIf="!this.oauthService.hasValidIdToken()" class="ui-button-success"
+    style="margin: 10px;width: 60px;height: 25px;">
     Login
 </button>
 
-<button pButton class="ui-button-raised" (click)="logoff()" *ngIf="this.oauthService.hasValidIdToken()" style="margin-left: 20px;width: 60px;height: 25px;">
+<button pButton (click)="logoff()" *ngIf="this.oauthService.hasValidIdToken()" class="ui-button-danger"
+    style="margin: 10px;width: 60px;height: 25px;">
     Logout
 </button>
+
+<ng-container *ngIf="this.oauthService.hasValidIdToken()">
+    <br>
+    <button pButton *ngIf="this.router.url !== '/'" routerLink="/"
+        style="margin-left: 10px;width: 60px;height: 25px;">Home</button>
+
+    <button pButton *ngIf="this.router.url !== '/reddit_login'" routerLink="/reddit_login"
+        style="margin-left: 10px;width: 160px;height: 25px;">Reddit Connection</button>
+    <button pButton *ngIf="this.router.url !== '/twitter_login'" routerLink="/twitter_login"
+        style="margin-left: 10px;width: 160px;height: 25px;">Twitter Connection</button>
+</ng-container>
+
+<hr>

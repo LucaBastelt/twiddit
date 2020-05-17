@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { OAuthService, JwksValidationHandler } from 'angular-oauth2-oidc';
 import { filter } from 'rxjs/operators';
 import { authConfig } from 'src/auth.config';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,7 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
   }
 
-  constructor(public oauthService: OAuthService) {
+  constructor(public oauthService: OAuthService, public router: Router) {
     this.configure();
 
     this.oauthService.events

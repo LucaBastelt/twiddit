@@ -24,6 +24,7 @@ export class ScheduledPostsComponent implements OnInit {
   ngOnInit() {
     this.scheduledPosts$ = this.schedulingService.getPosts();
     this.resetNewPost();
+    this.schedulingService.reloadPosts();
   }
 
   resetNewPost() {
