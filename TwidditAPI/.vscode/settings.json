@@ -5,8 +5,10 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "node_modules": false
+        "node_modules": false,
+        "dist": true
     },
     "typescript.tsdk": "node_modules\\typescript\\lib",
-    "explorerExclude.backup": null
+    "explorerExclude.backup": null,
+    "editor.formatOnSave": true
 }

@@ -36,7 +36,7 @@ console.log('running on port', port);
 app.set('port', port);
 
 const scheduler = new Scheduler();
-scheduler.initialize();
+scheduler.run();
 
 try {
   const ssl = {

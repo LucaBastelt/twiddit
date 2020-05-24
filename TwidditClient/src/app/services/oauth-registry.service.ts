@@ -62,23 +62,19 @@ export class OauthRegistryService {
       }));
   }
 
-  public async getTwitterOauthToken(): Promise<string> {
-    try {
-
-      const response = await this.httpClient.get<string>(
-        this.twitterTokenPath,
-        { headers: this.defaultHeader, observe: 'response' }
-      ).toPromise()
-        .catch(e => console.error(e));
-
-      if (response && 200 <= response.status && response.status < 300) {
-        return response.body;
-      } else {
-        return '';
-      }
-    } catch (error) {
-      return '';
-    }
+  public getTwitterOauthToken(): Observable<string> {
+    return this.httpClient.get<string>(
+      this.twitterTokenPath,
+      { headers: this.defaultHeader, observe: 'response' }
+    ).pipe(
+      map(response => {
+        if (response && 200 <= response.status && response.status < 300) {
+          return response.body;
+        } else {
+          return undefined;
+        }
+      }),
+      catchError(e => of(undefined)));
   }
 
   public getRedditOauthToken(): Observable<string> {
