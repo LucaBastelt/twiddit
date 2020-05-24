@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { getConnection } from '../model/databaseConnection';
-import { getRedditOauthConfig, getRedditToken, redditScopes } from '../redditConnection';
+import { RedditConnection } from '../redditConnection';
 import { AuthorizationTokenConfig } from 'simple-oauth2';
 import { getJwtCheckFuncs } from './checkJwt.routes';
 
@@ -20,9 +20,9 @@ const createRouter = () => {
 
   router.get('/reddit-auth-url', (req, res) => {
     const userMail = Buffer.from(req.user.email).toString('base64');
-    const authorizationUrl = getRedditOauthConfig().authorizationCode.authorizeURL({
+    const authorizationUrl = RedditConnection.getRedditOauthConfig().authorizationCode.authorizeURL({
       redirect_uri: redditRedirectUri,
-      scope: redditScopes,
+      scope: RedditConnection.redditScopes,
       state: userMail,
       duration: 'permanent',
     });
@@ -35,12 +35,12 @@ const createRouter = () => {
     const options = {
       code: req.query.code,
       redirect_uri: redditRedirectUri,
-      scope: redditScopes,
+      scope: RedditConnection.redditScopes,
       state: userMail,
     } as AuthorizationTokenConfig;
 
     try {
-      const oauthConfig = getRedditOauthConfig();
+      const oauthConfig = RedditConnection.getRedditOauthConfig();
       // The resulting token.
       const result = await oauthConfig.authorizationCode.getToken(options);
 
@@ -52,7 +52,7 @@ const createRouter = () => {
         return res.status(500).json('Authentication failed');
       } else {
         const db = await getConnection();
-        await db.pool.query('DELETE FROM reddit_oauth WHERE userMail = $1;', [userMail]);
+        await db.pool.query('DELETE FROM reddit_oauth WHERE usermail = $1;', [userMail]);
         await db.pool.query('INSERT INTO reddit_oauth VALUES ($1, $2, $3, $4, $5);',
           [userMail, token.token.access_token, token.token.refresh_token, token.token.expires_in, token.token.expires_at]);
         return res.redirect('/reddit_login');
@@ -68,7 +68,7 @@ const createRouter = () => {
     const db = await getConnection();
     const userMail = req.user.email;
     db.pool
-      .query('SELECT * FROM twitter_oauth WHERE userMail = $1;', [userMail])
+      .query('SELECT * FROM twitter_oauth WHERE usermail = $1;', [userMail])
       .then((result) => {
         if (result.rowCount > 0)
           res.json(result.rows.pop().access_token);
@@ -83,11 +83,20 @@ const createRouter = () => {
       );
   });
 
+  router.delete('/twitter-oauth', async (req, res, next) => {
+    const db = await getConnection();
+    const userMail = req.user.email;
+
+    await db.pool.query('DELETE FROM twitter_oauth WHERE usermail = $1', [userMail]);
+
+    res.status(200).send();
+  });
+
   router.get('/reddit-oauth', async (req, res, next) => {
     const userMail = req.user.email;
-    const token = await getRedditToken(userMail);
+    const token = await RedditConnection.construct(userMail);
     if (token)
-      res.json(token.access_token);
+      res.json(token.token.access_token);
     else
       res.status(404).send();
   });
@@ -96,7 +105,7 @@ const createRouter = () => {
     const db = await getConnection();
     const userMail = req.user.email;
 
-    await db.pool.query('DELETE FROM reddit_oauth WHERE userMail = $1', [userMail]);
+    await db.pool.query('DELETE FROM reddit_oauth WHERE usermail = $1', [userMail]);
 
     res.status(200).send();
   });

@@ -20,17 +20,17 @@ export class DatabaseConnection {
         await this.pool.query(
             'CREATE TABLE IF NOT EXISTS twiddit.scheduledposts'
             + ' (id SERIAL, '
-            + 'userMail text NOT NULL, '
-            + 'postDateTime text NOT NULL, '
-            + 'imageUrl text, '
-            + 'twitterText text, '
-            + 'redditTitle text, '
+            + 'usermail text NOT NULL, '
+            + 'postdatetime text NOT NULL, '
+            + 'imageurl text, '
+            + 'twittertext text, '
+            + 'reddittitle text, '
             + 'subreddit text, '
             + 'nsfw boolean);')
             .catch(console.log);
         await this.pool.query(
             'CREATE TABLE IF NOT EXISTS twiddit.twitter_oauth'
-            + ' (userMail text NOT NULL UNIQUE, '
+            + ' (usermail text NOT NULL UNIQUE, '
             + 'access_token text NOT NULL, '
             + 'refresh_token text NOT NULL, '
             + 'expires_in text NOT NULL, '
@@ -38,7 +38,7 @@ export class DatabaseConnection {
             .catch(console.log);
         await this.pool.query(
             'CREATE TABLE IF NOT EXISTS twiddit.reddit_oauth'
-            + ' (userMail text NOT NULL UNIQUE, '
+            + ' (usermail text NOT NULL UNIQUE, '
             + 'access_token text NOT NULL, '
             + 'refresh_token text NOT NULL, '
             + 'expires_in text NOT NULL, '

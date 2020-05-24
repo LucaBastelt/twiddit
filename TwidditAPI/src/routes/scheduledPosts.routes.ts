@@ -18,7 +18,7 @@ const createRouter = () => {
     const db = await getConnection();
     const userMail = req.user.email;
     db.pool
-      .query('SELECT * FROM scheduledposts WHERE userMail = $1;', [userMail])
+      .query('SELECT * FROM scheduledposts WHERE usermail = $1;', [userMail])
       .then((result) => res.send(morphToScheduledPosts(result.rows)))
       .catch((e) =>
         setImmediate(() => {
@@ -52,7 +52,7 @@ const createRouter = () => {
     db.pool
       .query('UPDATE scheduledposts '
         + 'SET postdatetime=$1, imageurl=$2, twittertext=$3, reddittitle=$4, subreddit=$5, nsfw=$6  '
-        + 'WHERE userMail = $7 AND id = $8 RETURNING *;',
+        + 'WHERE usermail = $7 AND id = $8 RETURNING *;',
         [post.postdatetime, post.imageurl, post.twittertext, post.reddittitle, post.subreddit, post.nsfw, userMail, req.params.postId])
       .then((result) => res.status(201).send(morphToScheduledPosts(result.rows)))
       .catch((e) =>
@@ -68,7 +68,7 @@ const createRouter = () => {
     const userMail = req.user.email;
     db.pool
       .query('DELETE FROM scheduledposts  '
-        + 'WHERE userMail = $1 AND id = $2 RETURNING *;',
+        + 'WHERE usermail = $1 AND id = $2 RETURNING *;',
         [userMail, req.params.postId])
       .then((result) => {
         console.log(result);
